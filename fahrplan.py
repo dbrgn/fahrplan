@@ -1,11 +1,13 @@
 #!/usr/bin/env python
-# coding=utf-8
+# -*- coding: utf-8 -*-
 
+import sys
 import argparse
 from datetime import date, time, datetime
 import json
 import requests
-import clint
+from clint.textui import puts, colored
+from clint.textui import columns
 
 API_URL = 'http://transport.opendata.ch/v1'
 
@@ -26,23 +28,98 @@ def main():
     args = parser.parse_args()
     args.mode = 1 if args.mode == 'arr' else 0
 
-    url, params = buildRequest(args)
+    url, params = build_request(args)
     response = requests.get(url, params=params)
     data = json.loads(response.content)
     connections = data['connections']
 
-    for connection in connections:
-        print 'Departure: %s Platform %s' % \
-            (connection['from']['departure'], connection['from']['platform'])
+
+    """Table width:
+
+    max(len(station)) + 12 + 8 + 5 + 2 + max(len(means)) + 7
+
+    """
+
+    table = [parse_connection(c) for c in connections]
+
+    # Get column widths
+    station_width = len(max([t['station_from'] for t in table] + \
+                            [t['station_to'] for t in table]))
+    cols = (
+        u'Station',
+        u'Date',
+        u'Time',
+        u'Duration',
+        u'Changes',
+        u'Means',
+        u'Capacity'
+    )
+    widths = (
+        max(station_width, len(cols[0])),
+        max(12, len(cols[1])),
+        max(8,  len(cols[2])),
+        max(5,  len(cols[3])),
+        max(2,  len(cols[4])),
+        max(4,  len(cols[5])), # todo
+        max(7,  len(cols[6])),
+    )
+    pairs = map(list, zip(cols, [w + 1 for w in widths]))
+    puts(columns(*pairs))
+
+    separator = u''.join('-' * (w + 1) + '|' for w in widths)
+    print separator
+
+    for row in table:
+        cols = [
+            row['station_from'].encode('latin1', errors='replace'),
+            u'Fr, 12.34.56',
+            row['departure'],
+            u'??:??',
+            u'?',
+            u'todo',
+            row['capacity2nd'].encode('latin1', errors='replace'),
+        ]
+        pairs = map(list, zip(cols, [w + 1 for w in widths]))
+        puts(columns(*pairs))
+        print separator
 
 
-def buildRequest(args):
+def build_request(args):
     url = '%s/connections' % API_URL
     params = {
         'from': args.start,
         'to': args.destination,
     }
     return url, params
+
+
+def parse_connection(connection):
+    con_from = connection['from']
+    con_to = connection['to']
+    data = {}
+
+    data['station_from'] = con_from['station']['name']
+    data['station_to'] = con_to['station']['name']
+    data['departure'] = con_from['departure'][:5]
+    data['platform'] = con_from['platform']
+
+    try:
+        capacity1st = int(con_from['prognosis']['capacity1st'])
+    except TypeError:
+        data['capacity1st'] = u'?'
+    else:
+        cap_string = u'*' * capacity1st + u'.' * (3 - capacity1st)
+        data['capacity1st'] = cap_string
+
+    try:
+        capacity2nd = int(con_from['prognosis']['capacity2nd'])
+    except TypeError:
+        data['capacity2nd'] = u'?'
+    else:
+        cap_string = u'*' * capacity2nd + u'.' * (3 - capacity2nd)
+        data['capacity2nd'] = cap_string
+    
+    return data
 
 
 if __name__ == '__main__':
