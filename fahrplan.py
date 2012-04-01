@@ -12,12 +12,16 @@ API_URL = 'http://transport.opendata.ch/v1'
 
 
 def main():
-    if len(sys.argv) > 1 and sys.argv[1].lower() == 'von':
-        #print 'Human parsing'
-        assert 'von' in sys.argv
-        assert 'nach' in sys.argv
 
-        #print sys.argv
+    """Parse arguments."""
+
+    # Human parsing
+    if len(sys.argv) > 1 and sys.argv[1].lower() == 'von':
+
+        keywords = ['von', 'nach', 'via', 'ab', 'an']
+        keywords_required = ['von', 'nach']
+        for keyword in keywords_required:
+            assert keyword in sys.argv, '"%s" not provided.' % keyword
 
         class DictObj(object):
             def __init__(self, d):
@@ -25,12 +29,25 @@ def main():
             def __getattr__(self, m):
                 return self.d.get(m, None)
 
+        data = {}
+        current_kw = None
+        for arg in sys.argv[1:]:
+            if arg in keywords:
+                current_kw = arg
+                data[current_kw] = ''
+            else:
+                data[current_kw] = ('%s %s' % (data[current_kw], arg)).strip()
+
         args = DictObj({
-            'start': sys.argv[2],
-            'destination': sys.argv[4],
+            'start': data.get('von'),
+            'destination': data.get('nach'),
+            'via': data.get('via'),
+            'departure': data.get('ab'),
+            'arrival': data.get('an'),
         })
+
+    # Argparse
     else:
-        print 'Argparse'
         parser = argparse.ArgumentParser(
             description='Query the SBB timetables.',
             epilog='Disclaimer: This is not an official SBB app. The correctness \
@@ -38,16 +55,24 @@ def main():
         parser.add_argument('start')
         parser.add_argument('destination')
         parser.add_argument('-v', '--via', help='set a via')
-        parser.add_argument('-d', '--date', type=date, default=date.today(), help='departure or arrival date')
-        parser.add_argument('-t', '--time', type=time, default=datetime.time(datetime.today()), help='departure or arrival time')
-        parser.add_argument('-m', '--mode', choices=['dep', 'arr'], default='dep', help='time mode (date/time are departure or arrival)')
+        parser.add_argument('-d', '--date', type=date, help='departure or arrival date')
+        parser.add_argument('-t', '--time', type=time, help='departure or arrival time')
+        parser.add_argument('-m', '--mode', choices=['dep', 'arr'], default='dep',
+                help='time mode (date/time are departure or arrival)')
         parser.add_argument('--verbosity', type=int, choices=range(1, 4), default=2)
         parser.add_argument('--version', action='version', version='%(prog)s v0.1')
         args = parser.parse_args()
         args.mode = 1 if args.mode == 'arr' else 0
 
+
+    """Do API request."""
+
     url, params = build_request(args)
-    response = requests.get(url, params=params)
+    try:
+        response = requests.get(url, params=params)
+    except requests.exceptions.ConnectionError:
+        print 'Error: Could not reach network.'
+        sys.exit(-1)
     try:
         data = json.loads(response.content)
     except ValueError:
@@ -55,43 +80,48 @@ def main():
         sys.exit(-1)
     connections = data['connections']
 
+
+    """Process data."""
+
     table = [parse_connection(c) for c in connections]
 
-    # Get column widths
-    station_width = len(max([t['station_from'] for t in table] + \
-                            [t['station_to'] for t in table],
-                            key=len))
+    # Define columns
     cols = (
         u'#', u'Station', u'Platform', u'Date', u'Time',
         u'Duration', u'Chg.', u'Travel with', u'Occupancy',
     )
     col_separator = ' | '
 
+    # Calculate and set column widths
+    station_width = len(max([t['station_from'] for t in table] + \
+                            [t['station_to'] for t in table],
+                            key=len))
     widths = (
         2,
         max(station_width, len(cols[1])),  # station
-        max(4,  len(cols[2])),  # platform (TODO width)
-        max(13, len(cols[3])),  # date
-        max(5 , len(cols[4])),  # time
-        max(5,  len(cols[5])),  # duration
-        max(2,  len(cols[6])),  # changes
-        max(12, len(cols[7])),  # means (TODO width)
-        max(7,  len(cols[8])),  # capacity
+        max(4,  len(cols[2])),   # platform (TODO width)
+        max(13, len(cols[3])),   # date
+        max(5,  len(cols[4])),   # time
+        max(5,  len(cols[5])),   # duration
+        max(2,  len(cols[6])),   # changes
+        max(12, len(cols[7])),   # means (TODO width)
+        max(9,  len(cols[8])),  # occupancy
     )
 
-    # Print separator line
     def _print_separator():
+        """Print separator line."""
         width = sum(widths) + len(col_separator) * len(widths)
         print '-' * width
 
-    # Print line with specified cols
     def _print_line(cols):
+        """Print line with specified cols."""
         print_line(cols, widths, separator=col_separator)
 
     # Print the header line
     _print_line(cols)
     _print_separator()
 
+    # Print data
     for i, row in enumerate(table, start=1):
         duration = row['arrival'] - row['departure']
         cols_from = (
@@ -103,7 +133,7 @@ def main():
             ':'.join(unicode(duration).split(':')[:2]),
             u'-',
             u'-',
-            (lambda: u'1: %s' % row['occupancy1st'] if row['occupancy1st'] else u'')(),
+            (lambda: u'1: %s' % row['occupancy1st'] if row['occupancy1st'] else u'-')(),
         )
         _print_line(cols_from)
 
@@ -116,7 +146,7 @@ def main():
             u'',
             u'-',
             u'-',
-            (lambda: u'2: %s' % row['occupancy2nd'] if row['occupancy2nd'] else u'')(),
+            (lambda: u'2: %s' % row['occupancy2nd'] if row['occupancy2nd'] else u'-')(),
         )
         _print_line(cols_to)
 
@@ -125,10 +155,15 @@ def main():
 
 def build_request(args):
     url = '%s/connections' % API_URL
+    params = {}
     params = {
         'from': args.start,
         'to': args.destination,
     }
+    if hasattr(args, 'via'):
+        params['time'] = args.via
+    if hasattr(args, 'departure'):
+        params['time'] = args.departure
     return url, params
 
 
