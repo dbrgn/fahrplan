@@ -103,7 +103,7 @@ def main():
             ':'.join(unicode(duration).split(':')[:2]),
             u'-',
             u'-',
-            row['occupancy2nd'],
+            (lambda: u'1: %s' % row['occupancy1st'] if row['occupancy1st'] else u'')(),
         )
         _print_line(cols_from)
 
@@ -116,7 +116,7 @@ def main():
             u'',
             u'-',
             u'-',
-            u'', #row['occupancy2nd'],
+            (lambda: u'2: %s' % row['occupancy2nd'] if row['occupancy2nd'] else u'')(),
         )
         _print_line(cols_to)
 
