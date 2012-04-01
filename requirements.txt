@@ -1,4 +1,3 @@
 requests
 envoy
-clint
 python-dateutil
