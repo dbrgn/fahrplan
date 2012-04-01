@@ -7,8 +7,6 @@ from datetime import date, time, datetime
 import json
 import requests
 import dateutil.parser
-from clint.textui import puts, colored
-from clint.textui import columns
 
 API_URL = 'http://transport.opendata.ch/v1'
 
@@ -57,13 +55,6 @@ def main():
         sys.exit(-1)
     connections = data['connections']
 
-
-    """Table width:
-
-    max(len(station)) + 12 + 8 + 5 + 2 + max(len(means)) + 7
-
-    """
-
     table = [parse_connection(c) for c in connections]
 
     # Get column widths
@@ -109,7 +100,7 @@ def main():
             row['platform_from'],
             row['departure'].strftime('%a, %d.%m.%y'),
             row['departure'].strftime('%H:%M'),
-            u'%u:%u' % (duration.seconds / 3600 + duration.days * 24, duration.seconds / 60),
+            ':'.join(unicode(duration).split(':')[:2]),
             u'-',
             u'-',
             row['occupancy2nd'],
