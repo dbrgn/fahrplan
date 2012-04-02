@@ -96,6 +96,7 @@ def main():
     station_width = len(max([t['station_from'] for t in table] + \
                             [t['station_to'] for t in table],
                             key=len))
+    travelwith_width = len(max([t['travelwith'] for t in table], key=len))
     widths = (
         2,
         max(station_width, len(cols[1])),  # station
@@ -104,7 +105,7 @@ def main():
         max(5,  len(cols[4])),   # time
         max(5,  len(cols[5])),   # duration
         max(2,  len(cols[6])),   # changes
-        max(12, len(cols[7])),   # means (TODO width)
+        max(travelwith_width, len(cols[7])),   # means (TODO width)
         max(9,  len(cols[8])),  # occupancy
     )
 
@@ -131,8 +132,8 @@ def main():
             row['departure'].strftime('%a, %d.%m.%y'),
             row['departure'].strftime('%H:%M'),
             ':'.join(unicode(duration).split(':')[:2]),
-            u'-',
-            u'-',
+            row['change_count'],
+            row['travelwith'],
             (lambda: u'1: %s' % row['occupancy1st'] if row['occupancy1st'] else u'-')(),
         )
         _print_line(cols_from)
@@ -143,9 +144,9 @@ def main():
             row['platform_to'],
             row['arrival'].strftime('%a, %d.%m.%y'),
             row['arrival'].strftime('%H:%M'),
-            u'',
-            u'-',
-            u'-',
+            '',
+            '',
+            '',
             (lambda: u'2: %s' % row['occupancy2nd'] if row['occupancy2nd'] else u'-')(),
         )
         _print_line(cols_to)
@@ -170,7 +171,10 @@ def build_request(args):
 def parse_connection(connection):
     con_from = connection['from']
     con_to = connection['to']
+    con_sections = connection['sections']
     data = {}
+    transport_means = lambda s: s['journey']['category'] if 'journey' in s else 'walk'
+    categories = set(map(transport_means, con_sections))
 
     data['station_from'] = con_from['station']['name']
     data['station_to'] = con_to['station']['name']
@@ -178,6 +182,8 @@ def parse_connection(connection):
     data['arrival'] = dateutil.parser.parse(con_to['arrival'])
     data['platform_from'] = con_from['platform']
     data['platform_to'] = con_to['platform']
+    data['change_count'] = unicode(len(con_sections) - 1)
+    data['travelwith'] = ', '.join(filter(None, categories))
 
     occupancies = {
         None: u'',
