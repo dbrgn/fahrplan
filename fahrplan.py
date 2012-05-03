@@ -1,6 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+__title__ = 'fahrplan'
+__version__ = '0.1.0'
+__author__ = 'Danilo Bargen'
+__author_email__ = 'gezuru@gmail.com'
+__license__ = 'GPLv3'
+
 import sys
 import argparse
 from datetime import date, time
@@ -49,6 +55,7 @@ def main():
     # Argparse
     else:
         parser = argparse.ArgumentParser(
+            prog='fahrplan',
             description='Query the SBB timetables.',
             epilog='Disclaimer: This is not an official SBB app. The correctness \
                     of the data is not guaranteed.')
@@ -60,7 +67,7 @@ def main():
         parser.add_argument('-m', '--mode', choices=['dep', 'arr'], default='dep',
                 help='time mode (date/time are departure or arrival)')
         parser.add_argument('--verbosity', type=int, choices=range(1, 4), default=2)
-        parser.add_argument('--version', action='version', version='%(prog)s v0.1')
+        parser.add_argument('--version', action='version', version='%(prog)s v' + __version__)
         args = parser.parse_args()
         args.mode = 1 if args.mode == 'arr' else 0
 
