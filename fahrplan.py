@@ -30,6 +30,7 @@ from datetime import date, time
 import json
 import requests
 import dateutil.parser
+from tableprinter import Tableprinter
 
 API_URL = 'http://transport.opendata.ch/v1'
 
@@ -114,7 +115,6 @@ def main():
         u'#', u'Station', u'Platform', u'Date', u'Time',
         u'Duration', u'Chg.', u'Travel with', u'Occupancy',
     )
-    col_separator = ' | '
 
     # Calculate and set column widths
     station_width = len(max([t['station_from'] for t in table] + \
@@ -133,18 +133,12 @@ def main():
         max(9,  len(cols[8])),  # occupancy
     )
 
-    def _print_separator():
-        """Print separator line."""
-        width = sum(widths) + len(col_separator) * len(widths)
-        print '-' * width
-
-    def _print_line(cols):
-        """Print line with specified cols."""
-        print_line(cols, widths, separator=col_separator)
+    # Initialize table printer
+    tableprinter = Tableprinter(widths, separator=' | ')
 
     # Print the header line
-    _print_line(cols)
-    _print_separator()
+    tableprinter.print_line(cols)
+    tableprinter.print_separator()
 
     # Print data
     for i, row in enumerate(table, start=1):
@@ -160,7 +154,7 @@ def main():
             row['travelwith'],
             (lambda: u'1: %s' % row['occupancy1st'] if row['occupancy1st'] else u'-')(),
         )
-        _print_line(cols_from)
+        tableprinter.print_line(cols_from)
 
         cols_to = (
             '',
@@ -173,9 +167,9 @@ def main():
             '',
             (lambda: u'2: %s' % row['occupancy2nd'] if row['occupancy2nd'] else u'-')(),
         )
-        _print_line(cols_to)
+        tableprinter.print_line(cols_to)
 
-        _print_separator()
+        tableprinter.print_separator()
 
 
 def build_request(args):
@@ -193,6 +187,8 @@ def build_request(args):
 
 
 def parse_connection(connection):
+    """Process a connection object and return a dictionary with cleaned data."""
+
     con_from = connection['from']
     con_to = connection['to']
     con_sections = connection['sections']
@@ -222,13 +218,6 @@ def parse_connection(connection):
     data['occupancy2nd'] = occupancies.get(con_from['prognosis']['capacity2nd'], u'')
 
     return data
-
-
-def print_line(items, widths, separator=' '):
-    pairs = zip(items, widths)
-    for item, width in pairs:
-        sys.stdout.write(item.ljust(width) + separator)
-    sys.stdout.write('\n')
 
 
 if __name__ == '__main__':
