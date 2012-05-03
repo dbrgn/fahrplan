@@ -1,4 +1,4 @@
-## Main contributors ##
+## Main authors ##
 
  * Danilo Bargen (@gwrtheyrn)
 
