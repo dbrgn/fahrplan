@@ -2,7 +2,7 @@
 
  * Danilo Bargen (@gwrtheyrn)
 
-## Contributors #k#
+## Contributors ##
 
  * Chris Glass (@chrisglass) Small cleanups
  * Kristian Øllegaard (@KristianOellegaard) Some refactoring ideas
