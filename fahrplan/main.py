@@ -7,6 +7,7 @@ from datetime import date, time, datetime
 import json
 import requests
 import dateutil.parser
+from fahrplan import __version__ as version
 
 API_URL = 'http://transport.opendata.ch/v1'
 
@@ -51,7 +52,7 @@ def main():
         parser = argparse.ArgumentParser(
             description='Query the SBB timetables.',
             epilog='Disclaimer: This is not an official SBB app. The correctness \
-                    of the data is not guaranteed.')
+                    of the data is not guaranteed.', usage="fahrplan [options]")
         parser.add_argument('start')
         parser.add_argument('destination')
         parser.add_argument('-v', '--via', help='set a via')
@@ -60,7 +61,7 @@ def main():
         parser.add_argument('-m', '--mode', choices=['dep', 'arr'], default='dep',
                 help='time mode (date/time are departure or arrival)')
         parser.add_argument('--verbosity', type=int, choices=range(1, 4), default=2)
-        parser.add_argument('--version', action='version', version='%(prog)s v0.1')
+        parser.add_argument('--version', action='version', version='fahrplan v%s' % version)
         args = parser.parse_args()
         args.mode = 1 if args.mode == 'arr' else 0
 
