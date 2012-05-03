@@ -3,7 +3,7 @@
 
 import sys
 import argparse
-from datetime import date, time, datetime
+from datetime import date, time
 import json
 import requests
 import dateutil.parser
