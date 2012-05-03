@@ -18,11 +18,11 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 __title__ = 'fahrplan'
-__version__ = '0.1.0'
+__version__ = '0.1.0-dev'
+__description__ = 'A SBB/CFF/FFS commandline based timetable client.'
 __author__ = 'Danilo Bargen'
 __author_email__ = 'gezuru@gmail.com'
 __license__ = 'GPLv3'
-
 
 import sys
 import argparse
@@ -73,8 +73,8 @@ def main():
     # Argparse
     else:
         parser = argparse.ArgumentParser(
-            prog='fahrplan',
-            description='Query the SBB timetables.',
+            prog=__title__,
+            description=__description__,
             epilog='Disclaimer: This is not an official SBB app. The correctness \
                     of the data is not guaranteed.')
         parser.add_argument('start')

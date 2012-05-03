@@ -1,7 +1,7 @@
 fahrplan.py
 ===========
 
-*Work in progress!*
+*Work in progress, still very hackish code!*
 
 Goal: Simple access to the sbb timetable service from the commandline.
 

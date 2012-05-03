@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from setuptools import setup
+from setuptools import setup, find_packages
 import fahrplan
 
 f = open('requirements.txt', 'r')
@@ -11,16 +11,22 @@ readme = open('README.md').read()
 
 setup(name='fahrplan',
       version=fahrplan.__version__,
-      description=('A SBB/CFF/FFS commandline based timetable client.'),
+      description=fahrplan.__description__,
       author=fahrplan.__author__,
       author_email=fahrplan.__author_email__,
       url='https://github.com/gwrtheyrn/fahrplan.py',
+      packages=find_packages(),
+      zip_save=False,
+      include_package_data=True,
       license=fahrplan.__license__,
       keywords='fahrplan timetable sbb cff ffs public transport',
       long_description=readme,
       install_requires=requirements,
-      py_modules=['fahrplan'],
-      scripts=['fahrplan.py'],
+      entry_points={
+          'console_scripts': [
+              '%s = fahrplan.main:main' % fahrplan.__title__,
+          ]
+      },
       classifiers=[
           'Development Status :: 3 - Alpha',
           'Environment :: Console',
