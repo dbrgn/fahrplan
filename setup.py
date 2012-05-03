@@ -10,21 +10,21 @@ requirements = [l.strip().strip('\n') for l in lines if l.strip() and not l.stri
 readme = open('README.md').read()
 
 setup(name='fahrplan',
-      version=fahrplan.__version__,
-      description=fahrplan.__description__,
-      author=fahrplan.__author__,
-      author_email=fahrplan.__author_email__,
+      version=fahrplan.meta.version,
+      description=fahrplan.meta.description,
+      author=fahrplan.meta.author,
+      author_email=fahrplan.meta.author_email,
       url='https://github.com/gwrtheyrn/fahrplan.py',
       packages=find_packages(),
       zip_save=False,
       include_package_data=True,
-      license=fahrplan.__license__,
+      license=fahrplan.meta.license,
       keywords='fahrplan timetable sbb cff ffs public transport',
       long_description=readme,
       install_requires=requirements,
       entry_points={
           'console_scripts': [
-              '%s = fahrplan.main:main' % fahrplan.__title__,
+              '%s = fahrplan.main:main' % fahrplan.meta.title,
           ]
       },
       classifiers=[

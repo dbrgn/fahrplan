@@ -17,19 +17,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-__title__ = 'fahrplan'
-__version__ = '0.1.0-dev'
-__description__ = 'A SBB/CFF/FFS commandline based timetable client.'
-__author__ = 'Danilo Bargen'
-__author_email__ = 'gezuru@gmail.com'
-__license__ = 'GPLv3'
-
 import sys
 import argparse
 from datetime import date, time
 import json
 import requests
 import dateutil.parser
+import meta
 from tableprinter import Tableprinter
 
 API_URL = 'http://transport.opendata.ch/v1'
@@ -73,8 +67,8 @@ def main():
     # Argparse
     else:
         parser = argparse.ArgumentParser(
-            prog=__title__,
-            description=__description__,
+            prog=meta.title,
+            description=meta.description,
             epilog='Disclaimer: This is not an official SBB app. The correctness \
                     of the data is not guaranteed.')
         parser.add_argument('start')
@@ -85,7 +79,7 @@ def main():
         parser.add_argument('-m', '--mode', choices=['dep', 'arr'], default='dep',
                 help='time mode (date/time are departure or arrival)')
         parser.add_argument('--verbosity', type=int, choices=range(1, 4), default=2)
-        parser.add_argument('--version', action='version', version='%(prog)s v' + __version__)
+        parser.add_argument('--version', action='version', version='%(prog)s v' + meta.version)
         args = parser.parse_args()
         args.mode = 1 if args.mode == 'arr' else 0
 
