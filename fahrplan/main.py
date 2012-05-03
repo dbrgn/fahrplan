@@ -19,12 +19,14 @@
 
 import sys
 import argparse
-from datetime import date, time
 import json
+from datetime import date, time
+
 import requests
 import dateutil.parser
-import meta
-from tableprinter import Tableprinter
+
+from fahrplan import meta
+from fahrplan.tableprinter import Tableprinter
 
 API_URL = 'http://transport.opendata.ch/v1'
 
