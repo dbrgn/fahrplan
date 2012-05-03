@@ -1,3 +1,2 @@
 requests
-envoy
 python-dateutil
