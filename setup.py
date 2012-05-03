@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from setuptools import setup, find_packages
-import fahrplan
+from fahrplan import meta
 
 f = open('requirements.txt', 'r')
 lines = f.readlines()
@@ -10,21 +10,21 @@ requirements = [l.strip().strip('\n') for l in lines if l.strip() and not l.stri
 readme = open('README.md').read()
 
 setup(name='fahrplan',
-      version=fahrplan.meta.version,
-      description=fahrplan.meta.description,
-      author=fahrplan.meta.author,
-      author_email=fahrplan.meta.author_email,
+      version=meta.version,
+      description=meta.description,
+      author=meta.author,
+      author_email=meta.author_email,
       url='https://github.com/gwrtheyrn/fahrplan.py',
       packages=find_packages(),
       zip_save=False,
       include_package_data=True,
-      license=fahrplan.meta.license,
+      license=meta.license,
       keywords='fahrplan timetable sbb cff ffs public transport',
       long_description=readme,
       install_requires=requirements,
       entry_points={
           'console_scripts': [
-              '%s = fahrplan.main:main' % fahrplan.meta.title,
+              '%s = fahrplan.main:main' % meta.title,
           ]
       },
       classifiers=[
