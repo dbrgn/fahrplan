@@ -194,6 +194,8 @@ def parse_input(tokens):
         if token in keywords.values():
             if stack:
                 process_stack()
+        elif not stack:
+            continue
         stack.append(token)
     process_stack()
 
