@@ -1,6 +1,8 @@
 fahrplan.py
 ===========
 
+[![Build Status](https://secure.travis-ci.org/gwrtheyrn/fahrplan.py.png?branch=master)](http://travis-ci.org/gwrtheyrn/fahrplan.py)
+
 *Work in progress, still very hackish code!*
 
 Goal: Simple access to the sbb timetable service from the commandline.
