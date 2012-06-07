@@ -18,91 +18,80 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import sys
-import argparse
 import json
-from datetime import date, time
+import logging
 
 import requests
 import dateutil.parser
 
-from fahrplan import meta
-from fahrplan.tableprinter import Tableprinter
+import meta
+from tableprinter import Tableprinter
 
 API_URL = 'http://transport.opendata.ch/v1'
 
 
 def main():
 
-    """Parse arguments."""
+    """1. Parse arguments."""
 
-    # Human parsing
-    if len(sys.argv) > 1 and sys.argv[1].lower() == 'von':
+    if len(sys.argv) <= 1:
+        print 'Not enough arguments.'
+        sys.exit(1)
 
-        keywords = ['von', 'nach', 'via', 'ab', 'an']
-        keywords_required = ['von', 'nach']
-        for keyword in keywords_required:
-            assert keyword in sys.argv, '"%s" not provided.' % keyword
-
-        class DictObj(object):
-            def __init__(self, d):
-                self.d = d
-            def __getattr__(self, m):
-                return self.d.get(m, None)
-
-        data = {}
-        current_kw = None
-        for arg in sys.argv[1:]:
-            if arg in keywords:
-                current_kw = arg
-                data[current_kw] = ''
-            else:
-                data[current_kw] = ('%s %s' % (data[current_kw], arg)).strip()
-
-        args = DictObj({
-            'start': data.get('von'),
-            'destination': data.get('nach'),
-            'via': data.get('via'),
-            'departure': data.get('ab'),
-            'arrival': data.get('an'),
-        })
-
-    # Argparse
-    else:
-        parser = argparse.ArgumentParser(
-            prog=meta.title,
-            description=meta.description,
-            epilog='Disclaimer: This is not an official SBB app. The correctness \
-                    of the data is not guaranteed.')
-        parser.add_argument('start')
-        parser.add_argument('destination')
-        parser.add_argument('-v', '--via', help='set a via')
-        parser.add_argument('-d', '--date', type=date, help='departure or arrival date')
-        parser.add_argument('-t', '--time', type=time, help='departure or arrival time')
-        parser.add_argument('-m', '--mode', choices=['dep', 'arr'], default='dep',
-                help='time mode (date/time are departure or arrival)')
-        parser.add_argument('--verbosity', type=int, choices=range(1, 4), default=2)
-        parser.add_argument('--version', action='version', version='%(prog)s v' + meta.version)
-        args = parser.parse_args()
-        args.mode = 1 if args.mode == 'arr' else 0
+    tokens = sys.argv[1:]
+    while tokens[0].startswith('-'):
+        if tokens[0] in ['-h', '--help']:
+            print '%s: %s' % (meta.title, meta.description)
+            print
+            print 'Usage:'
+            print ' %s [options] arguments'
+            print
+            print 'Options:'
+            print ' -v, --version Show version number'
+            print ' -i, --info    Verbose output'
+            print ' -d, --debug   Debug output'
+            print ' -h, --help    Show this help'
+            print
+            print 'Arguments:'
+            print ' You can use natural language arguments using the following'
+            print ' keywords in your desired language:'
+            print ' en -- from, to, via, departure, arrival'
+            print ' de -- von, nach, via, ab, an'
+            print ' fr -- de, à, via, départ, arrivée'
+            print
+            print 'Examples:'
+            print ' fahrplan from thun to burgdorf'
+            print ' fahrplan via bern nach basel von zürich, helvetiaplatz ab 15:35'
+            print
+            sys.exit(0)
+        if tokens[0] in ['-v', '--version']:
+            print '%s %s' % (meta.title, meta.version)
+            sys.exit(0)
+        if tokens[0] in ['-i', '--info']:
+            logging.basicConfig(level=logging.INFO)
+        if tokens[0] in ['-d', '--debug']:
+            logging.basicConfig(level=logging.DEBUG)
+        del tokens[0]
+    args = parse_input(tokens)
 
 
-    """Do API request."""
+    """2. Do API request."""
 
     url, params = build_request(args)
     try:
         response = requests.get(url, params=params)
     except requests.exceptions.ConnectionError:
         print 'Error: Could not reach network.'
-        sys.exit(-1)
+        sys.exit(1)
     try:
         data = json.loads(response.content)
     except ValueError:
         print 'Error: Invalid API response (invalid JSON)'
-        sys.exit(-1)
+        sys.exit(1)
     connections = data['connections']
 
 
-    """Process data."""
+    """3. Process and output data."""
 
     table = [parse_connection(c) for c in connections]
 
@@ -168,17 +157,67 @@ def main():
         tableprinter.print_separator()
 
 
-def build_request(args):
-    url = '%s/connections' % API_URL
-    params = {}
-    params = {
-        'from': args.start,
-        'to': args.destination,
+def parse_input(tokens):
+    """Parse the human-like input (usually `sys.argv[1:]`)."""
+    keyword_dicts = {
+        'en': {'from': 'from', 'to': 'to', 'via': 'via', 'departure': 'departure', 'arrival': 'arrival'},
+        'de': {'from': 'von', 'to': 'nach', 'via': 'via', 'departure': 'ab', 'arrival': 'an'},
+        'fr': {'from': 'de', 'to': 'à', 'via': 'via', 'departure': 'départ', 'arrival': 'arrivée'},
     }
-    if hasattr(args, 'via'):
-        params['time'] = args.via
-    if hasattr(args, 'departure'):
-        params['time'] = args.departure
+
+    # Detect language
+    intersection_count = lambda a, b: len(set(a).intersection(b))
+    intersection_counts = [(lang, intersection_count(keywords.values(), tokens)) for lang, keywords in keyword_dicts.items()]
+    language = max(intersection_counts, key=lambda x: x[1])[0]
+    logging.info('Detected [%s] input' % language)
+
+    # Prepare variables
+    keywords = keyword_dicts[language]
+    logging.debug('Using keywords: ' + ', '.join(keywords.values()))
+    data = {}
+    stack = []
+
+    def process_stack():
+        """Process the stack. First item is the key, rest is value."""
+        key = stack[0]
+        value = ' '.join(stack[1:])
+        data[key] = value
+        stack[:] = []
+
+    # Process tokens
+    for token in tokens:
+        if token in keywords.values():
+            if stack:
+                process_stack()
+        stack.append(token)
+    process_stack()
+
+    # Translate language
+    # TODO this is sort of hackish... Could probably be done earlier.
+    for neutral, translated in keywords.iteritems():
+        if neutral != translated and translated in data:
+            data[neutral] = data[translated]
+            del data[translated]
+
+    logging.debug('Data: ' + repr(data))
+    return data
+
+
+def build_request(args):
+    """Get the argument dictionary and return a url and the url params."""
+
+    url = '%s/connections' % API_URL
+    params = {
+        'from': args['from'],
+        'to': args['to'],
+    }
+    if 'via' in args:
+        params['via'] = args.get('via')
+    if 'departure' in args:
+        params['time'] = args.get('departure')
+    if 'arrival' in args:
+        params['time'] = args.get('arrival')
+        params['isArrivalTime'] = 1
     return url, params
 
 
