@@ -25,7 +25,7 @@ Usage
 `fahrplan --help`:
 
     Usage:
-     %s [options] arguments
+     fahrplan [options] arguments
 
     Options:
      -v, --version Show version number

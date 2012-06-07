@@ -44,7 +44,7 @@ def main():
             print '%s: %s' % (meta.title, meta.description)
             print
             print 'Usage:'
-            print ' %s [options] arguments'
+            print ' %s [options] arguments' % meta.title
             print
             print 'Options:'
             print ' -v, --version Show version number'
