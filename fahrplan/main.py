@@ -35,7 +35,7 @@ def main():
     """1. Parse arguments."""
 
     if len([t for t in sys.argv if not t.startswith('-')]) <= 1:
-        print 'Not enough arguments.'
+        print >> sys.stderr, 'Not enough arguments.'
         sys.exit(1)
 
     tokens = sys.argv[1:]
@@ -81,12 +81,12 @@ def main():
     try:
         response = requests.get(url, params=params)
     except requests.exceptions.ConnectionError:
-        print 'Error: Could not reach network.'
+        print >> sys.stderr, 'Error: Could not reach network.'
         sys.exit(1)
     try:
         data = json.loads(response.content)
     except ValueError:
-        print 'Error: Invalid API response (invalid JSON)'
+        print >> sys.stderr, 'Error: Invalid API response (invalid JSON)'
         sys.exit(1)
     connections = data['connections']
 
