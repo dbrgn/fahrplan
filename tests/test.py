@@ -1,6 +1,6 @@
 import unittest
 import envoy
-from .context import fahrplan
+import fahrplan
 
 
 BASE_COMMAND = 'python fahrplan/main.py'
