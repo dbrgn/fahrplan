@@ -34,7 +34,7 @@ def main():
 
     """1. Parse arguments."""
 
-    if len(sys.argv) <= 1:
+    if len([t for t in sys.argv if not t.startswith('-')]) <= 1:
         print 'Not enough arguments.'
         sys.exit(1)
 
