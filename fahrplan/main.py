@@ -34,12 +34,15 @@ def main():
 
     """1. Parse arguments."""
 
-    if len([t for t in sys.argv if not t.startswith('-')]) <= 1:
-        print >> sys.stderr, 'Not enough arguments.'
-        sys.exit(1)
+    def assert_enough_arguments(args):
+        if len(args) <= 1:
+            print >> sys.stderr, 'Not enough arguments.'
+            sys.exit(1)
+
+    assert_enough_arguments(sys.argv)
 
     tokens = sys.argv[1:]
-    while tokens[0].startswith('-'):
+    while tokens and tokens[0].startswith('-'):
         if tokens[0] in ['-h', '--help']:
             print '%s: %s' % (meta.title, meta.description)
             print
@@ -72,6 +75,8 @@ def main():
         if tokens[0] in ['-d', '--debug']:
             logging.basicConfig(level=logging.DEBUG)
         del tokens[0]
+
+    assert_enough_arguments(tokens)
     args = parse_input(tokens)
 
 
