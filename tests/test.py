@@ -24,11 +24,11 @@ class TestBasicArgumentHandling(unittest.TestCase):
         args = ['-h', '--help']
         for arg in args:
             r = envoy.run('%s %s' % (BASE_COMMAND, arg))
-            self.assertIn('%s: %s' % (fahrplan.meta.title, fahrplan.meta.description), r.std_out)
-            self.assertIn('Usage:', r.std_out)
-            self.assertIn('Options:', r.std_out)
-            self.assertIn('Arguments:', r.std_out)
-            self.assertIn('Examples:', r.std_out)
+            self.assertTrue('%s: %s' % (fahrplan.meta.title, fahrplan.meta.description) in r.std_out)
+            self.assertTrue('Usage:' in r.std_out)
+            self.assertTrue('Options:' in r.std_out)
+            self.assertTrue('Arguments:' in r.std_out)
+            self.assertTrue('Examples:' in r.std_out)
 
 if __name__ == '__main__':
     unittest.main()
