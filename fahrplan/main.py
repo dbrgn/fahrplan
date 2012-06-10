@@ -242,12 +242,9 @@ def build_request(args):
 def parse_connection(connection):
     """Process a connection object and return a dictionary with cleaned data."""
 
+    data = {}
     con_from = connection['from']
     con_to = connection['to']
-    con_sections = connection['sections']
-    data = {}
-    transport_means = lambda s: s['journey']['category'] if 'journey' in s else 'walk'
-    categories = set(map(transport_means, con_sections))
 
     data['station_from'] = con_from['station']['name']
     data['station_to'] = con_to['station']['name']
@@ -255,20 +252,20 @@ def parse_connection(connection):
     data['arrival'] = dateutil.parser.parse(con_to['arrival'])
     data['platform_from'] = con_from['platform']
     data['platform_to'] = con_to['platform']
-    data['change_count'] = unicode(len(con_sections) - 1)
-    data['travelwith'] = ', '.join(filter(None, categories))
+    data['change_count'] = unicode(connection['transfers'])
+    data['travelwith'] = ', '.join(connection['products'])
 
     occupancies = {
         None: u'',
-        '-1': u'',
-        '0': u'Low',  # todo check
-        '1': u'Low',
-        '2': u'Medium',
-        '3': u'High',
+        -1: u'',
+        0: u'Low',  # todo check
+        1: u'Low',
+        2: u'Medium',
+        3: u'High',
     }
 
-    data['occupancy1st'] = occupancies.get(con_from['prognosis']['capacity1st'], u'')
-    data['occupancy2nd'] = occupancies.get(con_from['prognosis']['capacity2nd'], u'')
+    data['occupancy1st'] = occupancies.get(connection['capacity1st'], u'')
+    data['occupancy2nd'] = occupancies.get(connection['capacity2nd'], u'')
 
     return data
 
