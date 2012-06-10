@@ -14,6 +14,10 @@ class TestBasicArgumentHandling(unittest.TestCase):
             r = envoy.run('%s %s' % (BASE_COMMAND, arg))
             self.assertEqual('Not enough arguments.\n', r.std_err)
 
+    def testRequiredArgumentsMissing(self):
+        r = envoy.run('%s von bern' % BASE_COMMAND)
+        self.assertEqual('Error: "from" and "to" arguments must be present!\n', r.std_err)
+
     def testVersionInfo(self):
         args = ['-v', '--version']
         for arg in args:

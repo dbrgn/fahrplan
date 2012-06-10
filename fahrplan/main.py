@@ -77,7 +77,11 @@ def main():
         del tokens[0]
 
     assert_enough_arguments(tokens)
-    args, language = parse_input(tokens)
+    try:
+        args, language = parse_input(tokens)
+    except ValueError as e:
+        print >> sys.stderr, 'Error: %s' % e
+        sys.exit(1)
 
 
     """2. Do API request."""
