@@ -1,2 +1,3 @@
-envoy
-fabric
+envoy==0.0.2
+Fabric==1.4.2
+unittest2==0.5.1
