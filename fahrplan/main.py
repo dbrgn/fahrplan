@@ -77,7 +77,7 @@ def main():
         del tokens[0]
 
     assert_enough_arguments(tokens)
-    args = parse_input(tokens)
+    args, language = parse_input(tokens)
 
 
     """2. Do API request."""
@@ -164,6 +164,10 @@ def main():
 
 def parse_input(tokens):
     """Parse the human-like input (usually `sys.argv[1:]`)."""
+
+    if len(tokens) < 2:
+        return {}, None
+
     keyword_dicts = {
         'en': {'from': 'from', 'to': 'to', 'via': 'via', 'departure': 'departure', 'arrival': 'arrival'},
         'de': {'from': 'von', 'to': 'nach', 'via': 'via', 'departure': 'ab', 'arrival': 'an'},
@@ -206,8 +210,11 @@ def parse_input(tokens):
             data[neutral] = data[translated]
             del data[translated]
 
+    if not ('from' in data and 'to' in data):
+        raise ValueError('"from" and "to" arguments must be present!')
+
     logging.debug('Data: ' + repr(data))
-    return data
+    return data, language
 
 
 def build_request(args):
