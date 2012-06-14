@@ -28,7 +28,7 @@ setup(name='fahrplan',
           ]
       },
       classifiers=[
-          'Development Status :: 3 - Alpha',
+          'Development Status :: 4 - Beta',
           'Environment :: Console',
           'License :: OSI Approved :: GNU General Public License (GPL)',
           'Natural Language :: English',
