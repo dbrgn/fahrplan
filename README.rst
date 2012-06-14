@@ -1,9 +1,9 @@
 fahrplan.py
 ===========
 
-[![Build Status](https://secure.travis-ci.org/gwrtheyrn/fahrplan.py.png?branch=master)](http://travis-ci.org/gwrtheyrn/fahrplan.py)
-
-*Work in progress, still very hackish code!*
+.. image:: https://secure.travis-ci.org/gwrtheyrn/fahrplan.py.png?branch=master
+    :alt: Build status
+    :target: http://travis-ci.org/gwrtheyrn/fahrplan.py
 
 Goal: Simple access to the sbb timetable service from the commandline with human
 readable argument parsing.
@@ -14,7 +14,7 @@ Relies on the public transport API by opendata.ch: http://transport.opendata.ch/
 Installing
 ----------
 
-To install current development version using pip, issue:
+To install current development version using pip, issue::
 
     $ sudo pip install -e git://github.com/gwrtheyrn/fahrplan.py.git#egg=fahrplan-dev
 
@@ -22,7 +22,7 @@ To install current development version using pip, issue:
 Usage
 -----
 
-`fahrplan --help`:
+``fahrplan --help``::
 
     Usage:
      fahrplan [options] arguments
@@ -44,16 +44,17 @@ Usage
      fahrplan from thun to burgdorf
      fahrplan via bern nach basel von zürich, helvetiaplatz ab 15:35
 
-![Screenshot](http://make.opendata.ch/lib/exe/fetch.php?media=project:20120331_160821.png)
+.. image:: http://make.opendata.ch/lib/exe/fetch.php?media=project:20120331_160821.png
+    :alt: Screenshot
 
 
 Testing
 -------
 
-To run the tests, run the following command from the root folder:
+To run the tests, run the following command from the root folder::
 
-    python -m tests.test
+    $ python -m tests.test
 
-If you have fabric installed, you can also use the `test` command:
+If you have fabric installed, you can also use the `test` command::
 
-    fab test
+    $ fab test

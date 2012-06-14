@@ -7,7 +7,7 @@ from fahrplan import meta
 f = open('requirements.txt', 'r')
 lines = f.readlines()
 requirements = [l.strip().strip('\n') for l in lines if l.strip() and not l.strip().startswith('#')]
-readme = open('README.md').read()
+readme = open('README.rst').read()
 
 setup(name='fahrplan',
       version=meta.version,
