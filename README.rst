@@ -58,3 +58,15 @@ To run the tests, run the following command from the root folder::
 If you have fabric installed, you can also use the `test` command::
 
     $ fab test
+
+
+Sourcecode
+----------
+
+The sourcecode is available on Github: https://github.com/gwrtheyrn/fahrplan.py
+
+
+License
+-------
+
+The code is licensed as GPLv3. See `LICENSE.md` for more details.
