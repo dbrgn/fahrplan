@@ -30,6 +30,9 @@ from tableprinter import Tableprinter
 API_URL = 'http://transport.opendata.ch/v1'
 
 
+__version__ = meta.version
+
+
 def main():
 
     """1. Parse arguments."""

@@ -1,4 +1,4 @@
 from fabric.api import local
 
 def test():
-    local('python -mtests.test')
+    local('cd fahrplan && python -mtests.test')

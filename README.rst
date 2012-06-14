@@ -51,7 +51,7 @@ Usage
 Testing
 -------
 
-To run the tests, run the following command from the root folder::
+To run the tests, run the following command from the fahrplan module folder::
 
     $ python -m tests.test
 
