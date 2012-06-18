@@ -14,9 +14,9 @@ Relies on the public transport API by opendata.ch: http://transport.opendata.ch/
 Installing
 ----------
 
-To install current development version using pip, issue::
+To install current version using pip, issue::
 
-    $ sudo pip install -e git://github.com/gwrtheyrn/fahrplan.py.git#egg=fahrplan-dev
+    $ sudo pip install fahrplan
 
 
 Usage
@@ -51,8 +51,9 @@ Usage
 Testing
 -------
 
-To run the tests, run the following command from the fahrplan module folder::
+To run the tests, run the following commands::
 
+    $ cd fahrplan
     $ python -m tests.test
 
 If you have fabric installed, you can also use the `test` command::
