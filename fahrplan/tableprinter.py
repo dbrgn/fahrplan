@@ -24,7 +24,7 @@ class Tableprinter(object):
         """
         pairs = zip(items, self.widths)
         for item, width in pairs:
-            sys.stdout.write(item.ljust(width).encode(sys.stdout.encoding) + self.separator)
+            sys.stdout.write(item.ljust(width).encode(sys.stdout.encoding, 'replace') + self.separator)
         sys.stdout.write('\n')
 
     def print_separator(self, char='-'):
