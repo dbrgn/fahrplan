@@ -1,4 +1,5 @@
 import sys
+import logging
 
 
 class Tableprinter(object):
@@ -14,6 +15,8 @@ class Tableprinter(object):
         """
         self.widths = widths
         self.separator = separator
+        self.encoding = sys.stdout.encoding or 'utf-8'
+        logging.debug('Using output encoding %s' % self.encoding)
 
     def print_line(self, items):
         """Print data line.
@@ -24,7 +27,7 @@ class Tableprinter(object):
         """
         pairs = zip(items, self.widths)
         for item, width in pairs:
-            sys.stdout.write(item.ljust(width).encode(sys.stdout.encoding, 'replace') + self.separator)
+            sys.stdout.write(item.ljust(width).encode(self.encoding, 'replace') + self.separator)
         sys.stdout.write('\n')
 
     def print_separator(self, char='-'):
