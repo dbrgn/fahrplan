@@ -1,6 +1,12 @@
 import unittest2 as unittest
 import envoy
-import main, meta
+import gevent
+import main
+import meta
+
+
+from gevent import monkey
+monkey.patch_socket()
 
 
 BASE_COMMAND = 'python main.py'
@@ -78,6 +84,64 @@ class TestInputParsing(unittest.TestCase):
     def testNotEnoughArgument(self):
         tokens = ['from', 'basel', 'via', 'bern']
         self.assertRaises(ValueError, main.parse_input, tokens)
+
+
+class TestBasicQuery(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        """Setup method that is only run once."""
+        cls.r = envoy.run('%s von basel nach zürich ab 15:00' % BASE_COMMAND)
+        cls.rows = cls.r.std_out.split('\n')
+
+    def returnStatus(self):
+        """The command should return the status code 0."""
+        self.assertEqual(0, self.r.status_code)
+
+    def testRowCount(self):
+        """A normal output table should have 14 rows."""
+        self.assertEqual(15, len(self.rows))
+
+    def testHeadline(self):
+        """Test the headline items."""
+        headline_items = ['Station', 'Platform', 'Date', 'Time', 'Duration', 'Chg.', 'Travel with', 'Occupancy']
+        for item in headline_items:
+            self.assertIn(item, self.rows[0])
+
+    def testEnumeration(self):
+        """Each row should be enumerated."""
+        firstcol = [row[0] for row in self.rows[:-1]]
+        self.assertEqual(['#','-','1',' ','-','2',' ','-','3',' ','-','4',' ','-'], firstcol)
+
+    def testStationNames(self):
+        """Station names should be "Basel SBB" and "Zürich HB"."""
+        self.assertTrue(self.rows[2].startswith('1  | Basel SBB'))
+        self.assertTrue(self.rows[3].startswith('   | Zürich HB'))
+
+
+class TestLanguages(unittest.TestCase):
+
+    def testBasicQuery(self):
+        """
+        Test a query in three languages and assert that the output of all
+        three queries is equal.
+
+        The test is run using async gevent tasks, so that they run as close
+        together as possible. (We don't want different output due to timing
+        issues...)
+
+        """
+        args = ['von bern nach basel via zürich ab 15:00',
+                'from bern to basel via zürich departure 15:00',
+                'de bern à basel via zürich départ 15:00']
+        jobs = [gevent.spawn(envoy.run, '%s %s' % (BASE_COMMAND, arg)) for arg in args]
+        gevent.joinall(jobs, timeout=10, raise_error=False)
+
+        statuscodes = [job.value.status_code for job in jobs]
+        self.assertEqual([0, 0, 0], statuscodes)
+
+        stdout_values = [job.value.std_out for job in jobs]
+        self.assertTrue(stdout_values[1:] == stdout_values[:-1])
 
 
 if __name__ == '__main__':
