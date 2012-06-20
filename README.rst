@@ -51,12 +51,20 @@ Usage
 Testing
 -------
 
+Prior to testing, you should install the required libraries (preferrably in
+a virtualenv)::
+
+    $ virtualenv --no-site-packages VIRTUAL
+    $ . VIRTUAL/bin/activate
+    $ pip install -r requirements.txt
+    $ pip install -r requirements-dev.txt
+
 To run the tests, run the following commands::
 
     $ cd fahrplan
     $ python -m tests.test
 
-If you have fabric installed, you can also use the `test` command::
+If you have fabric installed, you can also use the `test` command instead::
 
     $ fab test
 
