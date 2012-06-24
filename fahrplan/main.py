@@ -98,6 +98,8 @@ def main():
     try:
         data = json.loads(response.content)
     except ValueError:
+        logging.debug('Response status code: %s' % response.status_code)
+        logging.debug('Response content: %s' % response.content)
         print >> sys.stderr, 'Error: Invalid API response (invalid JSON)'
         sys.exit(1)
     connections = data['connections']
