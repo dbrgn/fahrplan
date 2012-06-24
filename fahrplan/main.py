@@ -96,10 +96,10 @@ def main():
         print >> sys.stderr, 'Error: Could not reach network.'
         sys.exit(1)
     try:
-        data = json.loads(response.content)
+        data = json.loads(response.text)
     except ValueError:
         logging.debug('Response status code: %s' % response.status_code)
-        logging.debug('Response content: %s' % response.content)
+        logging.debug('Response text: %s' % response.text)
         print >> sys.stderr, 'Error: Invalid API response (invalid JSON)'
         sys.exit(1)
     connections = data['connections']
