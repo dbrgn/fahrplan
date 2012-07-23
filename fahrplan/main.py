@@ -131,7 +131,7 @@ def main():
     )
 
     # Calculate and set column widths
-    station_width = len(max([t['station_from'] for t in table] + \
+    station_width = len(max([t['station_from'] for t in table] +
                             [t['station_to'] for t in table],
                             key=len))
     travelwith_width = len(max([t['travelwith'] for t in table], key=len))
@@ -186,8 +186,13 @@ def main():
         tableprinter.print_separator()
 
 
-def parse_input(tokens):
-    """Parse the human-like input (usually `sys.argv[1:]`)."""
+def parse_input(tokens, sloppy_validation=False):
+    """Parse the human-like input (usually `sys.argv[1:]`).
+
+    Keyword arguments:
+     sloppy_validation -- Less strict validation, used mainly for testing (default False)
+
+    """
 
     if len(tokens) < 2:
         return {}, None
@@ -200,7 +205,8 @@ def parse_input(tokens):
 
     # Detect language
     intersection_count = lambda a, b: len(set(a).intersection(b))
-    intersection_counts = [(lang, intersection_count(keywords.values(), tokens)) for lang, keywords in keyword_dicts.items()]
+    intersection_counts = [(lang, intersection_count(keywords.values(), tokens))
+            for lang, keywords in keyword_dicts.items()]
     language = max(intersection_counts, key=lambda x: x[1])[0]
     logging.info('Detected [%s] input' % language)
 
@@ -235,10 +241,11 @@ def parse_input(tokens):
             del data[translated]
 
     # Validate data
-    if not ('from' in data and 'to' in data):
-        raise ValueError('"from" and "to" arguments must be present!')
-    if 'departure' in data and 'arrival' in data:
-        raise ValueError('You can\'t specify both departure *and* arrival time.')
+    if not sloppy_validation:
+        if not ('from' in data and 'to' in data):
+            raise ValueError('"from" and "to" arguments must be present!')
+        if 'departure' in data and 'arrival' in data:
+            raise ValueError('You can\'t specify both departure *and* arrival time.')
 
     logging.debug('Data: ' + repr(data))
     return data, language

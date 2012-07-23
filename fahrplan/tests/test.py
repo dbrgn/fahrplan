@@ -66,19 +66,19 @@ class TestInputParsing(unittest.TestCase):
 
     def testValidArgumentsEn(self):
         tokens = ['from', 'Zürich', 'to', 'Locarno', 'via', 'Genève', 'departure', '18:00', 'arrival', '19:00']
-        data, language = main.parse_input(tokens)
+        data, language = main.parse_input(tokens, sloppy_validation=True)
         self.assertEqual(self.valid_expected_result, data)
         self.assertEqual('en', language)
 
     def testValidArgumentsDe(self):
         tokens = ['von', 'Zürich', 'nach', 'Locarno', 'via', 'Genève', 'ab', '18:00', 'an', '19:00']
-        data, language = main.parse_input(tokens)
+        data, language = main.parse_input(tokens, sloppy_validation=True)
         self.assertEqual(self.valid_expected_result, data)
         self.assertEqual('de', language)
 
     def testValidArgumentsFr(self):
         tokens = ['de', 'Zürich', 'à', 'Locarno', 'via', 'Genève', 'départ', '18:00', 'arrivée', '19:00']
-        data, language = main.parse_input(tokens)
+        data, language = main.parse_input(tokens, sloppy_validation=True)
         self.assertEqual(self.valid_expected_result, data)
         self.assertEqual('fr', language)
 
