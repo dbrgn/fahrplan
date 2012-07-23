@@ -114,6 +114,11 @@ def main():
 
     connections = data['connections']
 
+    if not connections:
+        print 'No connections found from "%s" to "%s".' % \
+                (data['from']['name'], data['to']['name'])
+        sys.exit(0)
+
 
     """3. Process and output data."""
 

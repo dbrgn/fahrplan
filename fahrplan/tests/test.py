@@ -1,3 +1,4 @@
+# coding=utf-8
 import unittest2 as unittest
 import envoy
 import gevent
@@ -142,6 +143,20 @@ class TestLanguages(unittest.TestCase):
 
         stdout_values = [job.value.std_out for job in jobs]
         self.assertTrue(stdout_values[1:] == stdout_values[:-1])
+
+
+class RegressionTests(unittest.TestCase):
+
+    def testIss13(self):
+        """
+        Github issue #13:
+
+        Station not found: ValueError: max() arg is an empty sequence.
+
+        """
+        args = 'von zuerich manegg nach nach stadelhofen'
+        query = envoy.run('%s %s' % (BASE_COMMAND, args))
+        self.assertEqual(0, query.status_code, 'Program terminated with statuscode != 0')
 
 
 if __name__ == '__main__':
