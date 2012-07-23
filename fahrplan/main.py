@@ -28,8 +28,7 @@ import meta
 from tableprinter import Tableprinter
 
 API_URL = 'http://transport.opendata.ch/v1'
-
-
+ENCODING = sys.stdout.encoding or 'utf-8'
 __version__ = meta.version
 
 
@@ -115,8 +114,9 @@ def main():
     connections = data['connections']
 
     if not connections:
-        print 'No connections found from "%s" to "%s".' % \
+        msg = 'No connections found from "%s" to "%s".' % \
                 (data['from']['name'], data['to']['name'])
+        print msg.encode(ENCODING)
         sys.exit(0)
 
 
