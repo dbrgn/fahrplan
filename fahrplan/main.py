@@ -234,8 +234,11 @@ def parse_input(tokens):
             data[neutral] = data[translated]
             del data[translated]
 
+    # Validate data
     if not ('from' in data and 'to' in data):
         raise ValueError('"from" and "to" arguments must be present!')
+    if 'departure' in data and 'arrival' in data:
+        raise ValueError('You can\'t specify both departure *and* arrival time.')
 
     logging.debug('Data: ' + repr(data))
     return data, language

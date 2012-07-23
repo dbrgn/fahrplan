@@ -147,13 +147,18 @@ class TestLanguages(unittest.TestCase):
 
 class RegressionTests(unittest.TestCase):
 
+    def testIss11(self):
+        """Github issue #11:
+        Don't allow both departure and arrival time."""
+        args = 'von bern nach basel ab 15:00 an 16:00'
+        query = envoy.run('%s %s' % (BASE_COMMAND, args))
+        self.assertEqual('Error: You can\'t specify both departure *and* arrival time.\n',
+                query.std_err)
+
+
     def testIss13(self):
-        """
-        Github issue #13:
-
-        Station not found: ValueError: max() arg is an empty sequence.
-
-        """
+        """Github issue #13:
+        Station not found: ValueError: max() arg is an empty sequence."""
         args = 'von zuerich manegg nach nach stadelhofen'
         query = envoy.run('%s %s' % (BASE_COMMAND, args))
         self.assertEqual(0, query.status_code, 'Program terminated with statuscode != 0')
