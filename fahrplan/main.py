@@ -26,6 +26,7 @@ import dateutil.parser
 
 import meta
 from tableprinter import Tableprinter
+from parser import parse_input
 
 API_URL = 'http://transport.opendata.ch/v1'
 ENCODING = sys.stdout.encoding or 'utf-8'
@@ -100,7 +101,7 @@ def main():
     if not response.ok:
         verbose_status = requests.status_codes._codes[response.status_code][0]
         print >> sys.stderr, 'Server Error: HTTP %s (%s)' % \
-                (response.status_code, verbose_status)
+                 (response.status_code, verbose_status)
         sys.exit(1)
 
     try:
@@ -115,7 +116,7 @@ def main():
 
     if not connections:
         msg = 'No connections found from "%s" to "%s".' % \
-                (data['from']['name'], data['to']['name'])
+              (data['from']['name'], data['to']['name'])
         print msg.encode(ENCODING)
         sys.exit(0)
 
@@ -184,71 +185,6 @@ def main():
         tableprinter.print_line(cols_to)
 
         tableprinter.print_separator()
-
-
-def parse_input(tokens, sloppy_validation=False):
-    """Parse the human-like input (usually `sys.argv[1:]`).
-
-    Keyword arguments:
-     sloppy_validation -- Less strict validation, used mainly for testing (default False)
-
-    """
-
-    if len(tokens) < 2:
-        return {}, None
-
-    keyword_dicts = {
-        'en': {'from': 'from', 'to': 'to', 'via': 'via', 'departure': 'departure', 'arrival': 'arrival'},
-        'de': {'from': 'von', 'to': 'nach', 'via': 'via', 'departure': 'ab', 'arrival': 'an'},
-        'fr': {'from': 'de', 'to': 'à', 'via': 'via', 'departure': 'départ', 'arrival': 'arrivée'},
-    }
-
-    # Detect language
-    intersection_count = lambda a, b: len(set(a).intersection(b))
-    intersection_counts = [(lang, intersection_count(keywords.values(), tokens))
-            for lang, keywords in keyword_dicts.items()]
-    language = max(intersection_counts, key=lambda x: x[1])[0]
-    logging.info('Detected [%s] input' % language)
-
-    # Prepare variables
-    keywords = keyword_dicts[language]
-    logging.debug('Using keywords: ' + ', '.join(keywords.values()))
-    data = {}
-    stack = []
-
-    def process_stack():
-        """Process the stack. First item is the key, rest is value."""
-        key = stack[0]
-        value = ' '.join(stack[1:])
-        data[key] = value
-        stack[:] = []
-
-    # Process tokens
-    for token in tokens:
-        if token in keywords.values():
-            if stack:
-                process_stack()
-        elif not stack:
-            continue
-        stack.append(token)
-    process_stack()
-
-    # Translate language
-    # TODO this is sort of hackish... Could probably be done earlier.
-    for neutral, translated in keywords.iteritems():
-        if neutral != translated and translated in data:
-            data[neutral] = data[translated]
-            del data[translated]
-
-    # Validate data
-    if not sloppy_validation:
-        if not ('from' in data and 'to' in data):
-            raise ValueError('"from" and "to" arguments must be present!')
-        if 'departure' in data and 'arrival' in data:
-            raise ValueError('You can\'t specify both departure *and* arrival time.')
-
-    logging.debug('Data: ' + repr(data))
-    return data, language
 
 
 def build_request(args):
