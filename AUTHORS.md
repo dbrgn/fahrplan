@@ -1,6 +1,6 @@
 ## Main authors ##
 
- * Danilo Bargen (gwrtheyrn)
+ * Danilo Bargen (dbrgn)
 
 ## Contributors ##
 
