@@ -53,7 +53,8 @@ def parse_input(tokens, sloppy_validation=False):
         stack.append(token)
     process_stack()
 
-    # Translate language
+    # Translate language to neutral form. Essentially it just renames
+    # non-English dict keys to English ones.
     # TODO this is sort of hackish... Could probably be done earlier.
     for neutral, translated in keywords.iteritems():
         if neutral != translated and translated in data:
@@ -69,3 +70,21 @@ def parse_input(tokens, sloppy_validation=False):
 
     logging.debug('Data: ' + repr(data))
     return data, language
+
+
+    """
+    transport.opendata.ch request params:
+    - from
+    - to
+    - via
+    - date
+    - time
+    - isArrivalTime
+    - transportations
+    - limit
+    - page
+    - direct
+    - sleeper
+    - couchette
+    - bike
+    """
