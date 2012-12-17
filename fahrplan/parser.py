@@ -3,11 +3,25 @@ import logging
 
 
 def parse_input(tokens, sloppy_validation=False):
-    """Take a list of tokens (usually ``sys.argv[1:]``) and parse the "human
+    """Parse input tokens.
+    
+    Take a list of tokens (usually ``sys.argv[1:]``) and parse the "human
     readable" input into a format suitable for machines.
 
-    Keyword arguments:
-     sloppy_validation -- Less strict validation, used mainly for testing (default False)
+    Args:
+        tokens: List of tokens (usually ``sys.argv[1:]``.
+        sloppy_validation: Set to True to enable less strict validation. Used
+            mainly for testing, default False.
+
+    Returns:
+        A 2-tuple containing the data dictionary and the language string. For
+        example:
+
+        ({'to': 'bern', 'from': 'zürich'}, 'de')
+
+    Raises:
+        ValueError: If "from" or "to" arguments are missing or if both
+            departure *and* arrival time are specified.
 
     """
 
