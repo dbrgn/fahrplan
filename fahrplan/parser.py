@@ -5,7 +5,7 @@ import logging
 def parse_input(tokens, sloppy_validation=False):
     """Take a list of tokens (usually ``sys.argv[1:]``) and parse the "human
     readable" input into a format suitable for machines.
-   
+
     Keyword arguments:
      sloppy_validation -- Less strict validation, used mainly for testing (default False)
 
@@ -30,36 +30,30 @@ def parse_input(tokens, sloppy_validation=False):
     language = max(intersection_counts, key=lambda x: x[1])[0]
     logging.info('Detected [%s] input' % language)
 
+    # Keywords mapping
+    keywords = dict((v, k) for k, v in keyword_dicts[language].iteritems())
+    logging.debug('Using keywords: ' + ', '.join(keywords.keys()))
+
     # Prepare variables
-    keywords = keyword_dicts[language]
-    logging.debug('Using keywords: ' + ', '.join(keywords.values()))
     data = {}
     stack = []
 
     def process_stack():
         """Process the stack. First item is the key, rest is value."""
-        key = stack[0]
+        key = keywords.get(stack[0])
         value = ' '.join(stack[1:])
         data[key] = value
         stack[:] = []
 
     # Process tokens
     for token in tokens:
-        if token in keywords.values():
+        if token in keywords.keys():
             if stack:
                 process_stack()
         elif not stack:
             continue
         stack.append(token)
     process_stack()
-
-    # Translate language to neutral form. Essentially it just renames
-    # non-English dict keys to English ones.
-    # TODO this is sort of hackish... Could probably be done earlier.
-    for neutral, translated in keywords.iteritems():
-        if neutral != translated and translated in data:
-            data[neutral] = data[translated]
-            del data[translated]
 
     # Validate data
     if not sloppy_validation:
