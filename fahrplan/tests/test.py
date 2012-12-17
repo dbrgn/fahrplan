@@ -2,7 +2,6 @@
 import unittest2 as unittest
 import envoy
 import gevent
-import main
 import parser
 import meta
 
@@ -113,7 +112,7 @@ class TestBasicQuery(unittest.TestCase):
     def testEnumeration(self):
         """Each row should be enumerated."""
         firstcol = [row[0] for row in self.rows[:-1]]
-        self.assertEqual(['#','-','1',' ','-','2',' ','-','3',' ','-','4',' ','-'], firstcol)
+        self.assertEqual(list('#-1 -2 -3 -4 -'), firstcol)
 
     def testStationNames(self):
         """Station names should be "Basel SBB" and "Zürich HB"."""
@@ -155,7 +154,6 @@ class RegressionTests(unittest.TestCase):
         query = envoy.run('%s %s' % (BASE_COMMAND, args))
         self.assertEqual('Error: You can\'t specify both departure *and* arrival time.\n',
                 query.std_err)
-
 
     def testIss13(self):
         """Github issue #13:
