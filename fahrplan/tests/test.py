@@ -53,37 +53,37 @@ class TestInputParsing(unittest.TestCase):
         self.assertIsNone(language)
 
     def testOneValidArgument(self):
-        tokens = ['from']
+        tokens = 'from'.split()
         data, language = parser.parse_input(tokens)
         self.assertEqual({}, data)
         self.assertIsNone(language)
 
     def testOneInvalidArgument(self):
-        tokens = ['foobar']
+        tokens = 'foobar'.split()
         data, language = parser.parse_input(tokens)
         self.assertEqual({}, data)
         self.assertIsNone(language)
 
     def testValidArgumentsEn(self):
-        tokens = ['from', 'Zürich', 'to', 'Locarno', 'via', 'Genève', 'departure', '18:00', 'arrival', '19:00']
-        data, language = parser.parse_input(tokens, sloppy_validation=True)
+        tokens = 'from Zürich to Locarno via Genève departure 18:00 arrival 19:00'.split()
+        data, language = parser._process_tokens(tokens, sloppy_validation=True)
         self.assertEqual(self.valid_expected_result, data)
         self.assertEqual('en', language)
 
     def testValidArgumentsDe(self):
-        tokens = ['von', 'Zürich', 'nach', 'Locarno', 'via', 'Genève', 'ab', '18:00', 'an', '19:00']
-        data, language = parser.parse_input(tokens, sloppy_validation=True)
+        tokens = 'von Zürich nach Locarno via Genève ab 18:00 an 19:00'.split()
+        data, language = parser._process_tokens(tokens, sloppy_validation=True)
         self.assertEqual(self.valid_expected_result, data)
         self.assertEqual('de', language)
 
     def testValidArgumentsFr(self):
-        tokens = ['de', 'Zürich', 'à', 'Locarno', 'via', 'Genève', 'départ', '18:00', 'arrivée', '19:00']
-        data, language = parser.parse_input(tokens, sloppy_validation=True)
+        tokens = 'de Zürich à Locarno via Genève départ 18:00 arrivée 19:00'.split()
+        data, language = parser._process_tokens(tokens, sloppy_validation=True)
         self.assertEqual(self.valid_expected_result, data)
         self.assertEqual('fr', language)
 
     def testNotEnoughArgument(self):
-        tokens = ['from', 'basel', 'via', 'bern']
+        tokens = 'from basel via bern'.split()
         self.assertRaises(ValueError, parser.parse_input, tokens)
 
 
