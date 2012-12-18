@@ -86,6 +86,16 @@ class TestInputParsing(unittest.TestCase):
         tokens = 'from basel via bern'.split()
         self.assertRaises(ValueError, parser.parse_input, tokens)
 
+    def testDepartureTime(self):
+        tokens = 'von basel nach bern ab 18:00'.split()
+        expected = {'from': 'basel', 'time': '18:00', 'to': 'bern'}
+        self.assertEqual(expected, parser.parse_input(tokens)[0])
+
+    def testArrivalTime(self):
+        tokens = 'von basel nach bern an 18:00'.split()
+        expected = {'from': 'basel', 'isArrivalTime': 1, 'time': '18:00', 'to': 'bern'}
+        self.assertEqual(expected, parser.parse_input(tokens)[0])
+
 
 class TestBasicQuery(unittest.TestCase):
 
