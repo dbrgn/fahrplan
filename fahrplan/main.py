@@ -89,9 +89,9 @@ def main():
 
     """2. Do API request."""
 
-    url, params = build_request(args)
+    url = '%s/connections' % API_URL
     try:
-        response = requests.get(url, params=params)
+        response = requests.get(url, params=args)
     except requests.exceptions.ConnectionError:
         print >> sys.stderr, 'Error: Could not reach network.'
         sys.exit(1)
@@ -185,24 +185,6 @@ def main():
         tableprinter.print_line(cols_to)
 
         tableprinter.print_separator()
-
-
-def build_request(args):
-    """Get the argument dictionary and return a url and the url params."""
-
-    url = '%s/connections' % API_URL
-    params = {
-        'from': args['from'],
-        'to': args['to'],
-    }
-    if 'via' in args:
-        params['via'] = args.get('via')
-    if 'departure' in args:
-        params['time'] = args.get('departure')
-    if 'arrival' in args:
-        params['time'] = args.get('arrival')
-        params['isArrivalTime'] = 1
-    return url, params
 
 
 def parse_connection(connection):

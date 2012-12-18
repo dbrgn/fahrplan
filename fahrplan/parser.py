@@ -2,7 +2,7 @@
 import logging
 
 
-def parse_input(tokens, sloppy_validation=False):
+def _process_tokens(tokens, sloppy_validation=False):
     """Parse input tokens.
     
     Take a list of tokens (usually ``sys.argv[1:]``) and parse the "human
@@ -14,17 +14,17 @@ def parse_input(tokens, sloppy_validation=False):
             mainly for testing, default False.
 
     Returns:
-        A 2-tuple containing the data dictionary and the language string. For
-        example:
+        A 2-tuple containing the unmapped data dictionary and the language
+        string. For example:
 
-        ({'to': 'bern', 'from': 'zürich'}, 'de')
+        ({'to': 'bern', 'from': 'zürich', 'departure': '18:00'}, 'de')
 
     Raises:
         ValueError: If "from" or "to" arguments are missing or if both
-            departure *and* arrival time are specified.
+            departure *and* arrival time are specified (as long as
+            sloppy_validatoin is disabled).
 
     """
-
     if len(tokens) < 2:
         return {}, None
 
@@ -75,6 +75,42 @@ def parse_input(tokens, sloppy_validation=False):
             raise ValueError('"from" and "to" arguments must be present!')
         if 'departure' in data and 'arrival' in data:
             raise ValueError('You can\'t specify both departure *and* arrival time.')
+
+    return data, language
+
+
+def parse_input(tokens):
+    """Parse input tokens.
+    
+    Take a list of tokens (usually ``sys.argv[1:]``) and parse the "human
+    readable" input into a format suitable for machines. The output format
+    matches the format required by the Transport API.
+
+    Args:
+        tokens: List of tokens (usually ``sys.argv[1:]``.
+
+    Returns:
+        A 2-tuple containing the data dictionary and the language string. For
+        example:
+
+        ({'to': 'bern', 'from': 'zürich'}, 'de')
+
+    Raises:
+        ValueError: If "from" or "to" arguments are missing or if both
+            departure *and* arrival time are specified.
+
+    """
+    # Process tokens, get data dict and language
+    data, language = _process_tokens(tokens)
+
+    # Map keys
+    if 'departure' in data:
+        data['time'] = data['departure']
+        del data['departure']
+    if 'arrival' in data:
+        data['time'] = data['arrival']
+        data['isArrivalTime'] = 1
+        del data['arrival']
 
     logging.debug('Data: ' + repr(data))
     return data, language
