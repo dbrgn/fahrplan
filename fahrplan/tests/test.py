@@ -87,17 +87,17 @@ class TestInputParsing(unittest.TestCase):
         tokens = 'from basel via bern'.split()
         self.assertRaises(ValueError, parser.parse_input, tokens)
 
-    def testDepartureTime(self):
+    def testBasicDepartureTime(self):
         tokens = 'von basel nach bern ab 18:00'.split()
         expected = {'from': 'basel', 'time': '18:00', 'to': 'bern'}
         self.assertEqual(expected, parser.parse_input(tokens)[0])
 
-    def testArrivalTime(self):
+    def testBasicArrivalTime(self):
         tokens = 'von basel nach bern an 18:00'.split()
         expected = {'from': 'basel', 'isArrivalTime': 1, 'time': '18:00', 'to': 'bern'}
         self.assertEqual(expected, parser.parse_input(tokens)[0])
 
-    def testHumanReadableTimes1(self):
+    def testImmediateTimes(self):
         now = datetime.datetime.now().strftime('%H:%M')
         queries = [
             'von basel nach bern ab jetzt'.split(),
@@ -111,7 +111,7 @@ class TestInputParsing(unittest.TestCase):
             data, _ = parser.parse_input(tokens)
             self.assertEqual(now, data['time'])
 
-    def testHumanReadableTimes2(self):
+    def testNoonTimes(self):
         queries = [
             'von basel nach bern ab mittag'.split(),
             'from basel to bern departure noon'.split(),
@@ -121,7 +121,7 @@ class TestInputParsing(unittest.TestCase):
             data, _ = parser.parse_input(tokens)
             self.assertEqual('12:00', data['time'])
 
-    def testHumanReadableTimes3(self):
+    def testMidnightTimes(self):
         queries = [
             'von basel nach bern ab mitternacht'.split(),
             'from basel to bern departure midnight'.split(),
@@ -130,6 +130,17 @@ class TestInputParsing(unittest.TestCase):
         for tokens in queries:
             data, _ = parser.parse_input(tokens)
             self.assertEqual('23:59', data['time'])
+
+    def testAtTimes(self):
+        queries = [
+            'von basel nach bern ab am mittag'.split(),
+            'von basel nach bern ab um 12:00'.split(),
+            'from basel to bern departure at noon'.split(),
+            'from basel to bern departure at 12:00'.split(),
+        ]
+        for tokens in queries:
+            data, _ = parser.parse_input(tokens)
+            self.assertEqual('12:00', data['time'])
 
 
 class TestBasicQuery(unittest.TestCase):

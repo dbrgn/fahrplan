@@ -101,16 +101,19 @@ def _parse_time(timestring, language):
             'now': ['jetzt', 'sofort', 'nun'],
             'noon': ['mittag'],
             'midnight': ['mitternacht'],
+            'at': ['um', 'am'],
         },
         'en': {
             'now': ['now', 'right now', 'immediately'],
             'noon': ['noon'],
             'midnight': ['midnight'],
+            'at': ['at'],
         },
         'fr': {
             'now': ['maitenant'],
             'noon': ['midi'],
             'midnight': ['minuit'],
+            'at': [],  # TODO: "à" clashes with top level keywords
         },
     }
 
@@ -119,6 +122,11 @@ def _parse_time(timestring, language):
     except IndexError as e:
         raise ValueError('Invalid language: "%s"!' % language)
 
+    # Ignore "at" keywords
+    if timestring.split(' ', 1)[0] in kws['at']:
+        timestring = timestring.split(' ', 1)[1]
+
+    # Parse regular time strings
     regular_time_match = re.match(r'([0-2]?[0-9])[:\-\. ]([0-9]{2})', timestring)
     if regular_time_match:
         return ':'.join(regular_time_match.groups())

@@ -45,8 +45,8 @@ Usage
 
     Examples:
      fahrplan from thun to burgdorf
-     fahrplan via bern nach basel von zürich, helvetiaplatz ab 15:35
-     fahrplan de lausanne à vevey arrivée minuit
+     fahrplan via neuchâtel à lausanne de zurich, helvetiaplatz départ 15:35
+     fahrplan von bern nach basel an um mitternacht
 
 .. image:: http://make.opendata.ch/lib/exe/fetch.php?media=project:20120331_160821.png
     :alt: Screenshot
