@@ -40,9 +40,13 @@ Usage
      de -- von, nach, via, ab, an
      fr -- de, à, via, départ, arrivée
 
+     You can also use natural time specifications in your language, like "now",
+     "immediately", "noon" or "midnight".
+
     Examples:
      fahrplan from thun to burgdorf
      fahrplan via bern nach basel von zürich, helvetiaplatz ab 15:35
+     fahrplan de lausanne à vevey arrivée minuit
 
 .. image:: http://make.opendata.ch/lib/exe/fetch.php?media=project:20120331_160821.png
     :alt: Screenshot

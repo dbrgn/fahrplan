@@ -4,6 +4,7 @@ import envoy
 import gevent
 import parser
 import meta
+import datetime
 
 
 from gevent import monkey
@@ -95,6 +96,40 @@ class TestInputParsing(unittest.TestCase):
         tokens = 'von basel nach bern an 18:00'.split()
         expected = {'from': 'basel', 'isArrivalTime': 1, 'time': '18:00', 'to': 'bern'}
         self.assertEqual(expected, parser.parse_input(tokens)[0])
+
+    def testHumanReadableTimes1(self):
+        now = datetime.datetime.now().strftime('%H:%M')
+        queries = [
+            'von basel nach bern ab jetzt'.split(),
+            'von basel nach bern ab sofort'.split(),
+            'from basel to bern departure now'.split(),
+            'from basel to bern departure right now'.split(),
+            'from basel to bern departure immediately'.split(),
+            'de basel à bern départ maitenant'.split(),
+        ]
+        for tokens in queries:
+            data, _ = parser.parse_input(tokens)
+            self.assertEqual(now, data['time'])
+
+    def testHumanReadableTimes2(self):
+        queries = [
+            'von basel nach bern ab mittag'.split(),
+            'from basel to bern departure noon'.split(),
+            'de basel à bern départ midi'.split(),
+        ]
+        for tokens in queries:
+            data, _ = parser.parse_input(tokens)
+            self.assertEqual('12:00', data['time'])
+
+    def testHumanReadableTimes3(self):
+        queries = [
+            'von basel nach bern ab mitternacht'.split(),
+            'from basel to bern departure midnight'.split(),
+            'de basel à bern départ minuit'.split(),
+        ]
+        for tokens in queries:
+            data, _ = parser.parse_input(tokens)
+            self.assertEqual('23:59', data['time'])
 
 
 class TestBasicQuery(unittest.TestCase):

@@ -65,9 +65,13 @@ def main():
             print ' de -- von, nach, via, ab, an'
             print ' fr -- de, à, via, départ, arrivée'
             print
+            print ' You can also use natural time specifications in your language, like "now",'
+            print ' "immediately", "noon" or "midnight".'
+            print
             print 'Examples:'
             print ' fahrplan from thun to burgdorf'
             print ' fahrplan via bern nach basel von zürich, helvetiaplatz ab 15:35'
+            print ' fahrplan de lausanne à vevey arrivée minuit'
             print
             sys.exit(0)
         if tokens[0] in ['-v', '--version']:

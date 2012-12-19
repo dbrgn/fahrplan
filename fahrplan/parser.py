@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from datetime import datetime
+import re
 import logging
 
 
@@ -79,6 +81,58 @@ def _process_tokens(tokens, sloppy_validation=False):
     return data, language
 
 
+def _parse_time(timestring, language):
+    """Parse time tokens.
+
+    Args:
+        timestring: String containing a time specification.
+        language: The language string (e.g. 'en' or 'de').
+
+    Returns:
+        Time string.
+
+    Raises:
+        ValueError: If time could not be parsed.
+
+    """
+
+    keywords = {
+        'de': {
+            'now': ['jetzt', 'sofort', 'nun'],
+            'noon': ['mittag'],
+            'midnight': ['mitternacht'],
+        },
+        'en': {
+            'now': ['now', 'right now', 'immediately'],
+            'noon': ['noon'],
+            'midnight': ['midnight'],
+        },
+        'fr': {
+            'now': ['maitenant'],
+            'noon': ['midi'],
+            'midnight': ['minuit'],
+        },
+    }
+
+    try:
+        kws = keywords[language]
+    except IndexError as e:
+        raise ValueError('Invalid language: "%s"!' % language)
+
+    regular_time_match = re.match(r'([0-2]?[0-9])[:\-\. ]([0-9]{2})', timestring)
+    if regular_time_match:
+        return ':'.join(regular_time_match.groups())
+
+    if timestring.lower() in kws['now']:
+        return datetime.now().strftime('%H:%M')
+    if timestring.lower() in kws['noon']:
+        return '12:00'
+    if timestring.lower() in kws['midnight']:
+        return '23:59'  # '00:00' would be the first minute of the day, not the last one.
+
+    raise ValueError('Time string "%s" could not be parsed.' % timestring)
+
+
 def parse_input(tokens):
     """Parse input tokens.
     
@@ -105,10 +159,10 @@ def parse_input(tokens):
 
     # Map keys
     if 'departure' in data:
-        data['time'] = data['departure']
+        data['time'] = _parse_time(data['departure'], language)
         del data['departure']
     if 'arrival' in data:
-        data['time'] = data['arrival']
+        data['time'] = _parse_time(data['arrival'], language)
         data['isArrivalTime'] = 1
         del data['arrival']
 
@@ -118,12 +172,12 @@ def parse_input(tokens):
 
     """
     transport.opendata.ch request params:
-    - from
-    - to
-    - via
+    x from
+    x to
+    x via
     - date
-    - time
-    - isArrivalTime
+    x time
+    x isArrivalTime
     - transportations
     - limit
     - page
