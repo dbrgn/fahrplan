@@ -1,5 +1,5 @@
-fahrplan.py
-===========
+fahrplan
+========
 
 .. image:: https://secure.travis-ci.org/dbrgn/fahrplan.py.png?branch=master
     :alt: Build status
