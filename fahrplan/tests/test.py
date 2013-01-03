@@ -189,7 +189,7 @@ class TestBasicQuery(unittest.TestCase):
             self.assertTrue(self.rows[3].decode().startswith('   | Zürich HB'))
         else:
             self.assertTrue(self.rows[2].startswith(b'1  | Basel SBB'))
-            self.assertTrue(self.rows[3].startswith(b'   | Z\\xfcrich HB'))
+            self.assertTrue(self.rows[3].startswith(b'   | Z\xc3\xbcrich HB'))
 
 
 class TestLanguages(unittest.TestCase):
