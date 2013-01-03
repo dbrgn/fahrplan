@@ -82,4 +82,4 @@ The sourcecode is available on Github: https://github.com/dbrgn/fahrplan
 License
 -------
 
-The code is licensed as GPLv3. See `LICENSE.md` for more details.
+The code is licensed as GPLv3. See `LICENSE` file for more details.
