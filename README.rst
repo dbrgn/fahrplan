@@ -10,6 +10,10 @@ readable argument parsing.
 
 Relies on the public transport API by opendata.ch: http://transport.opendata.ch/
 
+Fahrplan support both Python 2.6 and 2.7. PyPy should be working (except for the
+tests), but there is no official support until the tests are fixed. Python 3.3
+support is under way.
+
 
 Installing
 ----------
