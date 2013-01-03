@@ -1,9 +1,9 @@
 fahrplan
 ========
 
-.. image:: https://secure.travis-ci.org/dbrgn/fahrplan.py.png?branch=master
+.. image:: https://secure.travis-ci.org/dbrgn/fahrplan.png?branch=master
     :alt: Build status
-    :target: http://travis-ci.org/dbrgn/fahrplan.py
+    :target: http://travis-ci.org/dbrgn/fahrplan
 
 Goal: Simple access to the sbb timetable service from the commandline with human
 readable argument parsing.
@@ -76,7 +76,7 @@ If you have fabric installed, you can also use the `test` command instead::
 Sourcecode
 ----------
 
-The sourcecode is available on Github: https://github.com/dbrgn/fahrplan.py
+The sourcecode is available on Github: https://github.com/dbrgn/fahrplan
 
 
 License
