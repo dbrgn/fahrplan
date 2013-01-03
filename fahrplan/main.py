@@ -17,20 +17,28 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function, division, absolute_import, unicode_literals
+
 import sys
 import json
 import logging
+from functools import partial
 
 import requests
 import dateutil.parser
 
-import meta
-from tableprinter import Tableprinter
-from parser import parse_input
+from . import meta
+from .tableprinter import Tableprinter
+from .parser import parse_input
+
+__version__ = meta.version
 
 API_URL = 'http://transport.opendata.ch/v1'
 ENCODING = sys.stdout.encoding or 'utf-8'
-__version__ = meta.version
+
+
+# Helper function to print directly to sys.stderr
+perror = partial(print, file=sys.stderr)
 
 
 def main():
@@ -39,43 +47,44 @@ def main():
 
     def assert_enough_arguments(args):
         if len(args) <= 1:
-            print >> sys.stderr, 'Not enough arguments.'
+            perror('Not enough arguments.')
             sys.exit(1)
 
     assert_enough_arguments(sys.argv)
 
-    tokens = sys.argv[1:]
+    tokens = [arg.decode(ENCODING) for arg in sys.argv[1:]]
     while tokens and tokens[0].startswith('-'):
         if tokens[0] in ['-h', '--help']:
-            print '%s: %s' % (meta.title, meta.description)
-            print
-            print 'Usage:'
-            print ' %s [options] arguments' % meta.title
-            print
-            print 'Options:'
-            print ' -v, --version Show version number'
-            print ' -i, --info    Verbose output'
-            print ' -d, --debug   Debug output'
-            print ' -h, --help    Show this help'
-            print
-            print 'Arguments:'
-            print ' You can use natural language arguments using the following'
-            print ' keywords in your desired language:'
-            print ' en -- from, to, via, departure, arrival'
-            print ' de -- von, nach, via, ab, an'
-            print ' fr -- de, à, via, départ, arrivée'
-            print
-            print ' You can also use natural time specifications in your language, like "now",'
-            print ' "immediately", "noon" or "midnight".'
-            print
-            print 'Examples:'
-            print ' fahrplan from thun to burgdorf'
-            print ' fahrplan via bern nach basel von zürich, helvetiaplatz ab 15:35'
-            print ' fahrplan de lausanne à vevey arrivée minuit'
-            print
+            out = ('{meta.title}: {meta.description}\n'.format(meta=meta)
+                + '\n'
+                + 'Usage:\n'
+                + ' {meta.title} [options] arguments\n'.format(meta=meta)
+                + '\n'
+                + 'Options:\n'
+                + ' -v, --version Show version number\n'
+                + ' -i, --info    Verbose output\n'
+                + ' -d, --debug   Debug output\n'
+                + ' -h, --help    Show this help\n'
+                + '\n'
+                + 'Arguments:\n'
+                + ' You can use natural language arguments using the following\n'
+                + ' keywords in your desired language:\n'
+                + ' en -- from, to, via, departure, arrival\n'
+                + ' de -- von, nach, via, ab, an\n'
+                + ' fr -- de, à, via, départ, arrivée\n'
+                + '\n'
+                + ' You can also use natural time specifications in your language, like "now",\n'
+                + ' "immediately", "noon" or "midnight".\n'
+                + '\n'
+                + 'Examples:\n'
+                + ' fahrplan from thun to burgdorf\n'
+                + ' fahrplan via bern nach basel von zürich, helvetiaplatz ab 15:35\n'
+                + ' fahrplan de lausanne à vevey arrivée minuit\n'
+                + '\n')
+            print(out.encode(ENCODING, 'replace'))
             sys.exit(0)
         if tokens[0] in ['-v', '--version']:
-            print '%s %s' % (meta.title, meta.version)
+            print('{meta.title} {meta.version}'.format(meta=meta))
             sys.exit(0)
         if tokens[0] in ['-i', '--info']:
             logging.basicConfig(level=logging.INFO)
@@ -87,7 +96,7 @@ def main():
     try:
         args, language = parse_input(tokens)
     except ValueError as e:
-        print >> sys.stderr, 'Error: %s' % e
+        perror('Error:', e)
         sys.exit(1)
 
 
@@ -97,23 +106,23 @@ def main():
     try:
         response = requests.get(url, params=args)
     except requests.exceptions.ConnectionError:
-        print >> sys.stderr, 'Error: Could not reach network.'
+        perror('Error: Could not reach network.')
         sys.exit(1)
 
-    logging.debug('Response status: %s' % repr(response.status_code))
+    logging.debug('Response status: {!r}'.format(response.status_code))
 
     if not response.ok:
         verbose_status = requests.status_codes._codes[response.status_code][0]
-        print >> sys.stderr, 'Server Error: HTTP %s (%s)' % \
-                 (response.status_code, verbose_status)
+        perror('Server Error: HTTP %s (%s)' %
+                 (response.status_code, verbose_status))
         sys.exit(1)
 
     try:
         data = json.loads(response.text)
     except ValueError:
-        logging.debug('Response status code: %s' % response.status_code)
-        logging.debug('Response content: %s' % repr(response.content))
-        print >> sys.stderr, 'Error: Invalid API response (invalid JSON)'
+        logging.debug('Response status code: {0}'.format(response.status_code))
+        logging.debug('Response content: {0!r}'.format(response.content))
+        perror('Error: Invalid API response (invalid JSON)')
         sys.exit(1)
 
     connections = data['connections']
@@ -121,7 +130,7 @@ def main():
     if not connections:
         msg = 'No connections found from "%s" to "%s".' % \
               (data['from']['name'], data['to']['name'])
-        print msg.encode(ENCODING)
+        print(msg.encode(ENCODING))
         sys.exit(0)
 
 

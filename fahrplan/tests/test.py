@@ -1,17 +1,22 @@
-# coding=utf-8
+# -*- coding: utf-8 -*-
+
+from __future__ import print_function, division, absolute_import, unicode_literals
+
+import sys
 import unittest2 as unittest
+import datetime
 import envoy
 import gevent
-import parser
-import meta
-import datetime
+from .. import parser
+from .. import meta
 
 
 from gevent import monkey
 monkey.patch_socket()
 
 
-BASE_COMMAND = 'python main.py'
+BASE_COMMAND = 'python -m fahrplan.main'
+ENCODING = sys.stdout.encoding or 'utf-8'
 
 
 class TestBasicArgumentHandling(unittest.TestCase):
@@ -35,12 +40,14 @@ class TestBasicArgumentHandling(unittest.TestCase):
     def testHelp(self):
         args = ['-h', '--help']
         for arg in args:
-            r = envoy.run('%s %s' % (BASE_COMMAND, arg))
-            self.assertTrue('%s: %s' % (meta.title, meta.description) in r.std_out)
-            self.assertTrue('Usage:' in r.std_out)
-            self.assertTrue('Options:' in r.std_out)
-            self.assertTrue('Arguments:' in r.std_out)
-            self.assertTrue('Examples:' in r.std_out)
+            command = '{0} {1}'.format(BASE_COMMAND, arg).encode(ENCODING)
+            r = envoy.run(command)
+            title = '{meta.title}: {meta.description}'.format(meta=meta).encode(ENCODING)
+            self.assertTrue(title in r.std_out)
+            self.assertTrue(b'Usage:' in r.std_out)
+            self.assertTrue(b'Options:' in r.std_out)
+            self.assertTrue(b'Arguments:' in r.std_out)
+            self.assertTrue(b'Examples:' in r.std_out)
 
 
 class TestInputParsing(unittest.TestCase):
@@ -148,8 +155,9 @@ class TestBasicQuery(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """Setup method that is only run once."""
-        cls.r = envoy.run('%s von basel nach zürich ab 14:00' % BASE_COMMAND)
-        cls.rows = cls.r.std_out.split('\n')
+        command = '{0} von basel nach zürich ab 14:00'.format(BASE_COMMAND).encode(ENCODING)
+        cls.r = envoy.run(command)
+        cls.rows = cls.r.std_out.split(b'\n')
 
     def returnStatus(self):
         """The command should return the status code 0."""
@@ -172,8 +180,8 @@ class TestBasicQuery(unittest.TestCase):
 
     def testStationNames(self):
         """Station names should be "Basel SBB" and "Zürich HB"."""
-        self.assertTrue(self.rows[2].startswith('1  | Basel SBB'))
-        self.assertTrue(self.rows[3].startswith('   | Zürich HB'))
+        self.assertTrue(self.rows[2].startswith(b'1  | Basel SBB'))
+        self.assertTrue(self.rows[3].startswith(b'   | Zürich HB'))
 
 
 class TestLanguages(unittest.TestCase):
@@ -188,11 +196,11 @@ class TestLanguages(unittest.TestCase):
         issues...)
 
         """
-        args = ['von bern nach basel via zürich ab 15:00',
-                'from bern to basel via zürich departure 15:00',
-                'de bern à basel via zürich départ 15:00']
-        jobs = [gevent.spawn(envoy.run, '%s %s' % (BASE_COMMAND, arg)) for arg in args]
-        gevent.joinall(jobs, timeout=10, raise_error=False)
+        args = [b'von bern nach basel via zürich ab 15:00',
+                b'from bern to basel via zürich departure 15:00',
+                b'de bern à basel via zürich départ 15:00']
+        jobs = [gevent.spawn(envoy.run, b'%s %s' % (BASE_COMMAND.encode(ENCODING), arg)) for arg in args]
+        gevent.joinall(jobs, timeout=10)
 
         statuscodes = [job.value.status_code for job in jobs]
         self.assertEqual([0, 0, 0], statuscodes)
