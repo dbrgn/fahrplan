@@ -24,6 +24,7 @@ import json
 import logging
 from functools import partial
 
+import six
 import requests
 import dateutil.parser
 
@@ -52,7 +53,9 @@ def main():
 
     assert_enough_arguments(sys.argv)
 
-    tokens = [arg.decode(ENCODING) for arg in sys.argv[1:]]
+    tokens = sys.argv[1:]
+    if isinstance(tokens[0], six.binary_type):
+        tokens = [arg.decode(ENCODING) for arg in tokens]
     while tokens and tokens[0].startswith('-'):
         if tokens[0] in ['-h', '--help']:
             out = ('{meta.title}: {meta.description}\n'.format(meta=meta)
@@ -177,7 +180,7 @@ def main():
             row['platform_from'],
             row['departure'].strftime('%a, %d.%m.%y'),
             row['departure'].strftime('%H:%M'),
-            ':'.join(unicode(duration).split(':')[:2]),
+            ':'.join(six.text_type(duration).split(':')[:2]),
             row['change_count'],
             row['travelwith'],
             (lambda: u'1: %s' % row['occupancy1st'] if row['occupancy1st'] else u'-')(),
@@ -213,7 +216,7 @@ def parse_connection(connection):
     data['arrival'] = dateutil.parser.parse(con_to['arrival'])
     data['platform_from'] = con_from['platform']
     data['platform_to'] = con_to['platform']
-    data['change_count'] = unicode(connection['transfers'])
+    data['change_count'] = six.text_type(connection['transfers'])
     data['travelwith'] = ', '.join(connection['products'])
 
     occupancies = {

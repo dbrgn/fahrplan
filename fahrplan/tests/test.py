@@ -3,15 +3,20 @@
 from __future__ import print_function, division, absolute_import, unicode_literals
 
 import sys
-import unittest2 as unittest
 import datetime
+
+import six
 import envoy
 import gevent
+from gevent import monkey
+if sys.version_info[0] == 2 and sys.version_info[1] < 7:
+    import unittest2 as unittest
+else:
+    import unittest
+
 from .. import parser
 from .. import meta
 
-
-from gevent import monkey
 monkey.patch_socket()
 
 
@@ -154,7 +159,8 @@ class TestBasicQuery(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """Setup method that is only run once."""
-        cls.r = envoy.run(b'{0} von basel nach zürich ab 14:00'.format(BASE_COMMAND))
+        cmd = '{0} von basel nach zürich ab 14:00'.format(BASE_COMMAND)
+        cls.r = envoy.run(cmd.encode(ENCODING))
         cls.rows = cls.r.std_out.split(b'\n')
 
     def returnStatus(self):
@@ -178,8 +184,12 @@ class TestBasicQuery(unittest.TestCase):
 
     def testStationNames(self):
         """Station names should be "Basel SBB" and "Zürich HB"."""
-        self.assertTrue(self.rows[2].startswith(b'1  | Basel SBB'))
-        self.assertTrue(self.rows[3].startswith(b'   | Zürich HB'))
+        if six.PY3:  # quick and dirty
+            self.assertTrue(self.rows[2].decode().startswith('1  | Basel SBB'))
+            self.assertTrue(self.rows[3].decode().startswith('   | Zürich HB'))
+        else:
+            self.assertTrue(self.rows[2].startswith(b'1  | Basel SBB'))
+            self.assertTrue(self.rows[3].startswith(b'   | Z\\xfcrich HB'))
 
 
 class TestLanguages(unittest.TestCase):
@@ -194,10 +204,10 @@ class TestLanguages(unittest.TestCase):
         issues...)
 
         """
-        args = [b'von bern nach basel via zürich ab 15:00',
-                b'from bern to basel via zürich departure 15:00',
-                b'de bern à basel via zürich départ 15:00']
-        jobs = [gevent.spawn(envoy.run, b'{0} {1}'.format(BASE_COMMAND, arg)) for arg in args]
+        args = ['von bern nach basel via zürich ab 15:00',
+                'from bern to basel via zürich departure 15:00',
+                'de bern à basel via zürich départ 15:00']
+        jobs = [gevent.spawn(envoy.run, '{0} {1}'.format(BASE_COMMAND, arg).encode(ENCODING)) for arg in args]
         gevent.joinall(jobs, timeout=10)
 
         statuscodes = [job.value.status_code for job in jobs]

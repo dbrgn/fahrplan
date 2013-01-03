@@ -5,6 +5,8 @@ from __future__ import print_function, division, absolute_import, unicode_litera
 import sys
 import logging
 
+import six
+
 
 class Tableprinter(object):
     """Simple class to print an ascii table. Expects unicode data."""
@@ -32,7 +34,9 @@ class Tableprinter(object):
         pairs = zip(items, self.widths)
         for item, width in pairs:
             out = item.ljust(width) + self.separator
-            print(out.encode(self.encoding, 'replace'), end='')
+            if not six.PY3:
+                out = out.encode(self.encoding, 'replace')
+            print(out, end='')
         print()
 
     def print_separator(self, char='-'):

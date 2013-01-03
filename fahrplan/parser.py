@@ -6,6 +6,8 @@ from datetime import datetime
 import re
 import logging
 
+import six
+
 
 def _process_tokens(tokens, sloppy_validation=False):
     """Parse input tokens.
@@ -50,7 +52,7 @@ def _process_tokens(tokens, sloppy_validation=False):
     logging.info('Detected [%s] input' % language)
 
     # Keywords mapping
-    keywords = dict((v, k) for k, v in keyword_dicts[language].iteritems())
+    keywords = dict((v, k) for k, v in six.iteritems(keyword_dicts[language]))
     logging.debug('Using keywords: ' + ', '.join(keywords.keys()))
 
     # Prepare variables
