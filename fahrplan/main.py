@@ -109,7 +109,7 @@ def main():
         perror('Error: Could not reach network.')
         sys.exit(1)
 
-    logging.debug('Response status: {!r}'.format(response.status_code))
+    logging.debug('Response status: {0!r}'.format(response.status_code))
 
     if not response.ok:
         verbose_status = requests.status_codes._codes[response.status_code][0]
