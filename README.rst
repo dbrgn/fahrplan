@@ -69,8 +69,7 @@ a virtualenv)::
 
 To run the tests, run the following commands::
 
-    $ cd fahrplan
-    $ python -m tests.test
+    $ python -m fahrplan.tests.test
 
 If you have fabric installed, you can also use the `test` command instead::
 
