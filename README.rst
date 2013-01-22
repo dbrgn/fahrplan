@@ -52,7 +52,7 @@ Usage
      fahrplan via neuchâtel à lausanne de zurich, helvetiaplatz départ 15:35
      fahrplan von bern nach basel an um mitternacht
 
-.. image:: http://make.opendata.ch/lib/exe/fetch.php?media=project:20120331_160821.png
+.. image:: https://raw.github.com/dbrgn/fahrplan/master/screenshot.png
     :alt: Screenshot
 
 
