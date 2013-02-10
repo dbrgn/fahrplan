@@ -155,12 +155,12 @@ def main():
     widths = (
         2,
         max(station_width, len(cols[1])),  # station
-        max(4,  len(cols[2])),   # platform (TODO width)
-        max(13, len(cols[3])),   # date
-        max(5,  len(cols[4])),   # time
-        max(5,  len(cols[5])),   # duration
-        max(2,  len(cols[6])),   # changes
-        max(travelwith_width, len(cols[7])),   # means (TODO width)
+        max(4,  len(cols[2])),  # platform (TODO width)
+        max(13, len(cols[3])),  # date
+        max(5,  len(cols[4])),  # time
+        max(5,  len(cols[5])),  # duration
+        max(2,  len(cols[6])),  # changes
+        max(travelwith_width, len(cols[7])),  # means (TODO width)
         max(9,  len(cols[8])),  # occupancy
     )
 

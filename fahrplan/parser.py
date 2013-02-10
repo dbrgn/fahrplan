@@ -11,7 +11,7 @@ import six
 
 def _process_tokens(tokens, sloppy_validation=False):
     """Parse input tokens.
-    
+
     Take a list of tokens (usually ``sys.argv[1:]``) and parse the "human
     readable" input into a format suitable for machines.
 
@@ -135,7 +135,7 @@ def _parse_time(timestring, language):
 
     try:
         kws = keywords[language]
-    except IndexError as e:
+    except IndexError:
         raise ValueError('Invalid language: "%s"!' % language)
 
     # Ignore "at" keywords
@@ -159,7 +159,7 @@ def _parse_time(timestring, language):
 
 def parse_input(tokens):
     """Parse input tokens.
-    
+
     Take a list of tokens (usually ``sys.argv[1:]``) and parse the "human
     readable" input into a format suitable for machines. The output format
     matches the format required by the Transport API.
