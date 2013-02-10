@@ -45,10 +45,7 @@ def _process_tokens(tokens, sloppy_validation=False):
     }
 
     # Detect language
-    intersection_count = lambda a, b: len(set(a).intersection(b))
-    intersection_counts = [(lang, intersection_count(keywords.values(), tokens))
-                           for lang, keywords in keyword_dicts.items()]
-    language = max(intersection_counts, key=lambda x: x[1])[0]
+    language = _detect_language(keyword_dicts, tokens)
     logging.info('Detected [%s] input' % language)
 
     # Keywords mapping
@@ -84,6 +81,20 @@ def _process_tokens(tokens, sloppy_validation=False):
             raise ValueError('You can\'t specify both departure *and* arrival time.')
 
     return data, language
+
+
+def _detect_language(keyword_dicts, tokens):
+    """Detect the language of the tokens by finding the highest intersection
+    with the keywords of a specific language."""
+    intersection_count = lambda a, b: len(set(a).intersection(b))
+
+    counts = []
+    for lang, keywords in keyword_dicts.items():
+        count = intersection_count(keywords.values(), tokens)
+        counts.append((lang, count))
+
+    language = max(counts, key=lambda x: x[1])[0]
+    return language
 
 
 def _parse_time(timestring, language):
