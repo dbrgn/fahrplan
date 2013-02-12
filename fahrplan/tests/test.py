@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 from __future__ import print_function, division, absolute_import, unicode_literals
 
 import sys
@@ -27,7 +26,7 @@ ENCODING = sys.stdout.encoding or 'utf-8'
 class TestBasicArgumentHandling(unittest.TestCase):
 
     def testTooFewArguments(self):
-        args = ['', '-i', '-d']
+        args = ['', '-i', '-d', '-i -d']
         for arg in args:
             r = envoy.run(b'{0} {1}'.format(BASE_COMMAND, arg))
             self.assertEqual('Not enough arguments.\n', r.std_err)
@@ -37,13 +36,13 @@ class TestBasicArgumentHandling(unittest.TestCase):
         self.assertEqual('Error: "from" and "to" arguments must be present!\n', r.std_err)
 
     def testVersionInfo(self):
-        args = ['-v', '--version']
+        args = ['-v', '--version', '-d -i -v']
         for arg in args:
             r = envoy.run(b'{0} {1}'.format(BASE_COMMAND, arg))
             self.assertEqual('%s %s\n' % (meta.title, meta.version), r.std_out)
 
     def testHelp(self):
-        args = ['-h', '--help']
+        args = ['-h', '--help', '-d -i --help']
         for arg in args:
             r = envoy.run(b'{0} {1}'.format(BASE_COMMAND, arg))
             title = '{meta.title}: {meta.description}'.format(meta=meta).encode(ENCODING)
