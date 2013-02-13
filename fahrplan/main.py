@@ -238,6 +238,7 @@ def parse_connection(connection, include_sections=False):
     data = {}
     con_from = connection['from']
     con_to = connection['to']
+    walk = False
     keyfunc = lambda s: s['departure']['departure']
     con_sections = sorted(connection['sections'], key=keyfunc)
 
@@ -250,34 +251,44 @@ def parse_connection(connection, include_sections=False):
         3: 'High',
     }
 
-    def parse_section(section_from, section_to):
+    def parse_section(con_section):
+        departure = con_section['departure']
+        arrival = con_section['arrival']
+        journey = con_section.get('journey')
+        walk = con_section.get('walk')
         section = {}
-        section['station_from'] = section_from['station']['name']
-        section['station_to'] = section_to['station']['name']
-        section['departure'] = dateutil.parser.parse(section_from['departure'])
-        section['arrival'] = dateutil.parser.parse(section_to['arrival'])
-        section['platform_from'] = section_from['platform']
-        section['platform_to'] = section_to['platform']
+        section['station_from'] = departure['station']['name']
+        section['station_to'] = arrival['station']['name']
+        section['departure'] = dateutil.parser.parse(departure['departure'])
+        section['arrival'] = dateutil.parser.parse(arrival['arrival'])
+        section['platform_from'] = 'Walk' if walk else departure['platform']
+        section['platform_to'] = arrival['platform']
+        if walk:
+            section['occupancy1st'] = ''
+            section['occupancy2nd'] = ''
+        elif journey:
+            section['occupancy1st'] = occupancies.get(con_section['journey']['capacity1st'], '')
+            section['occupancy2nd'] = occupancies.get(con_section['journey']['capacity2nd'], '')
+        else:
+            section['occupancy1st'] = occupancies.get(connection['capacity1st'], '')
+            section['occupancy2nd'] = occupancies.get(connection['capacity2nd'], '')
         return section
 
     data['sections'] = []
     if include_sections:
         for con_section in con_sections:
-            section = parse_section(con_section['departure'], con_section['arrival'])
-            if not con_section.get('walk'):
-                section['occupancy1st'] = occupancies.get(con_section['journey']['capacity1st'], '')
-                section['occupancy2nd'] = occupancies.get(con_section['journey']['capacity2nd'], '')
+            section = parse_section(con_section)
+            if con_section.get('walk'):
+                walk = True
             data['sections'].append(section)
     else:
-        departure = connection['from']
-        arrival = connection['to']
-        section = parse_section(departure, arrival)
-        section['occupancy1st'] = occupancies.get(connection['capacity1st'], '')
-        section['occupancy2nd'] = occupancies.get(connection['capacity2nd'], '')
-        data['sections'].append(section)
+        con_section = {'departure': connection['from'], 'arrival': connection['to']}
+        data['sections'].append(parse_section(con_section))
 
     data['change_count'] = six.text_type(connection['transfers'])
     data['travelwith'] = ', '.join(connection['products'])
+    if walk:
+        data['travelwith'] += ', Walk'
     data['occupancy1st'] = occupancies.get(connection['capacity1st'], '')
     data['occupancy2nd'] = occupancies.get(connection['capacity2nd'], '')
 
