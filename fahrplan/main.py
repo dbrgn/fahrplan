@@ -34,9 +34,15 @@ from .parser import parse_input
 
 __version__ = meta.version
 
+# Base configuration
 API_URL = 'http://transport.opendata.ch/v1'
 ENCODING = sys.stdout.encoding or 'utf-8'
 
+# Output formats
+class Formats(object):
+    SIMPLE = 0
+    FULL = 1
+output_format = Formats.SIMPLE
 
 # Helper function to print directly to sys.stderr
 perror = partial(print, file=sys.stderr)
@@ -54,6 +60,7 @@ def main():
     assert_enough_arguments(sys.argv)
 
     tokens = sys.argv[1:]
+    global output_format
     if isinstance(tokens[0], six.binary_type):
         tokens = [arg.decode(ENCODING) for arg in tokens]
     while tokens and tokens[0].startswith('-'):
@@ -64,9 +71,10 @@ def main():
                 + ' {meta.title} [options] arguments\n'.format(meta=meta)
                 + '\n'
                 + 'Options:\n'
-                + ' -v, --version Show version number\n'
+                + ' -f, --full    Show full connection info\n'
                 + ' -i, --info    Verbose output\n'
                 + ' -d, --debug   Debug output\n'
+                + ' -v, --version Show version number\n'
                 + ' -h, --help    Show this help\n'
                 + '\n'
                 + 'Arguments:\n'
@@ -89,6 +97,8 @@ def main():
         if tokens[0] in ['-v', '--version']:
             print('{meta.title} {meta.version}'.format(meta=meta))
             sys.exit(0)
+        if tokens[0] in ['-f', '--full']:
+            output_format = Formats.FULL
         if tokens[0] in ['-i', '--info']:
             logging.basicConfig(level=logging.INFO)
         if tokens[0] in ['-d', '--debug']:
@@ -128,9 +138,7 @@ def main():
         perror('Error: Invalid API response (invalid JSON)')
         sys.exit(1)
 
-    connections = data['connections']
-
-    if not connections:
+    if not data['connections']:
         msg = 'No connections found from "%s" to "%s".' % \
               (data['from']['name'], data['to']['name'])
         print(msg.encode(ENCODING))
@@ -139,19 +147,23 @@ def main():
 
     """3. Process and output data."""
 
-    table = [parse_connection(c) for c in connections]
+    include_sections = (output_format == Formats.FULL)
+    connections = [parse_connection(c, include_sections) for c in data['connections']]
 
     # Define columns
     cols = (
-        u'#', u'Station', u'Platform', u'Date', u'Time',
-        u'Duration', u'Chg.', u'Travel with', u'Occupancy',
+        '#', 'Station', 'Platform', 'Date', 'Time',
+        'Duration', 'Chg.', 'Travel with', 'Occupancy',
     )
 
     # Calculate and set column widths
-    station_width = len(max([t['station_from'] for t in table] +
-                            [t['station_to'] for t in table],
-                            key=len))
-    travelwith_width = len(max([t['travelwith'] for t in table], key=len))
+    station_width = 0
+    for connection in connections:
+        for section in connection['sections']:
+            maxlen = max([len(section['station_from']), len(section['station_to'])])
+            if maxlen > station_width:
+                station_width = maxlen
+    travelwith_width = len(max([t['travelwith'] for t in connections], key=len))
     widths = (
         2,
         max(station_width, len(cols[1])),  # station
@@ -172,64 +184,102 @@ def main():
     tableprinter.print_separator()
 
     # Print data
-    for i, row in enumerate(table, start=1):
-        duration = row['arrival'] - row['departure']
-        cols_from = (
-            str(i),
-            row['station_from'],
-            row['platform_from'],
-            row['departure'].strftime('%a, %d.%m.%y'),
-            row['departure'].strftime('%H:%M'),
-            ':'.join(six.text_type(duration).split(':')[:2]),
-            row['change_count'],
-            row['travelwith'],
-            (lambda: u'1: %s' % row['occupancy1st'] if row['occupancy1st'] else u'-')(),
-        )
-        tableprinter.print_line(cols_from)
+    for i, conn in enumerate(connections, start=1):
+        duration = conn['sections'][-1]['arrival'] - conn['sections'][0]['departure']
+        for j, row in enumerate(conn['sections'], start=1):
+            cols_from = (
+                str(i) if j == 1 else '',
+                row['station_from'],
+                row['platform_from'],
+                row['departure'].strftime('%a, %d.%m.%y'),
+                row['departure'].strftime('%H:%M'),
+                ':'.join(six.text_type(duration).split(':')[:2]) if j == 1 else '',
+                conn['change_count'] if j == 1 else '',
+                conn['travelwith'] if j == 1 else '',
+                (lambda: '1: %s' % row['occupancy1st'] if row.get('occupancy1st') else '-')(),
+            )
+            tableprinter.print_line(cols_from)
 
-        cols_to = (
-            '',
-            row['station_to'],
-            row['platform_to'],
-            row['arrival'].strftime('%a, %d.%m.%y'),
-            row['arrival'].strftime('%H:%M'),
-            '',
-            '',
-            '',
-            (lambda: u'2: %s' % row['occupancy2nd'] if row['occupancy2nd'] else u'-')(),
-        )
-        tableprinter.print_line(cols_to)
-
+            cols_to = (
+                '',
+                row['station_to'],
+                row['platform_to'],
+                row['arrival'].strftime('%a, %d.%m.%y'),
+                row['arrival'].strftime('%H:%M'),
+                '',
+                '',
+                '',
+                (lambda: '2: %s' % row['occupancy2nd'] if row.get('occupancy2nd') else '-')(),
+            )
+            tableprinter.print_line(cols_to)
+            
+            if j != len(conn['sections']):
+                tableprinter.print_separator(cols=[1,2,3,4,8])
         tableprinter.print_separator()
 
 
-def parse_connection(connection):
-    """Process a connection object and return a dictionary with cleaned data."""
+def parse_connection(connection, include_sections=False):
+    """Parse a connection.
+
+    Process a connection object as returned from the API and return a
+    dictionary with cleaned data.
+
+    Args:
+        connection: A connection dictionary as returned by the JSON API.
+        include_sections: A boolean value determining whether to include the
+            sections in the returned data set or not (default False).
+
+    Returns:
+        A dictionary containing cleaned data. If sections are enabled, they are
+        contained in a list.
+
+    """
 
     data = {}
     con_from = connection['from']
     con_to = connection['to']
-
-    data['station_from'] = con_from['station']['name']
-    data['station_to'] = con_to['station']['name']
-    data['departure'] = dateutil.parser.parse(con_from['departure'])
-    data['arrival'] = dateutil.parser.parse(con_to['arrival'])
-    data['platform_from'] = con_from['platform']
-    data['platform_to'] = con_to['platform']
-    data['change_count'] = six.text_type(connection['transfers'])
-    data['travelwith'] = ', '.join(connection['products'])
+    keyfunc = lambda s: s['departure']['departure']
+    con_sections = sorted(connection['sections'], key=keyfunc)
 
     occupancies = {
-        None: u'',
-        -1: u'',
-        0: u'Low',  # todo check
-        1: u'Low',
-        2: u'Medium',
-        3: u'High',
+        None: '',
+        -1: '',
+        0: 'Low',  # todo check
+        1: 'Low',
+        2: 'Medium',
+        3: 'High',
     }
 
-    data['occupancy1st'] = occupancies.get(connection['capacity1st'], u'')
-    data['occupancy2nd'] = occupancies.get(connection['capacity2nd'], u'')
+    def parse_section(section_from, section_to):
+        section = {}
+        section['station_from'] = section_from['station']['name']
+        section['station_to'] = section_to['station']['name']
+        section['departure'] = dateutil.parser.parse(section_from['departure'])
+        section['arrival'] = dateutil.parser.parse(section_to['arrival'])
+        section['platform_from'] = section_from['platform']
+        section['platform_to'] = section_to['platform']
+        return section
+
+    data['sections'] = []
+    if include_sections:
+        for con_section in con_sections:
+            section = parse_section(con_section['departure'], con_section['arrival'])
+            if not con_section.get('walk'):
+                section['occupancy1st'] = occupancies.get(con_section['journey']['capacity1st'], '')
+                section['occupancy2nd'] = occupancies.get(con_section['journey']['capacity2nd'], '')
+            data['sections'].append(section)
+    else:
+        departure = connection['from']
+        arrival = connection['to']
+        section = parse_section(departure, arrival)
+        section['occupancy1st'] = occupancies.get(connection['capacity1st'], '')
+        section['occupancy2nd'] = occupancies.get(connection['capacity2nd'], '')
+        data['sections'].append(section)
+
+    data['change_count'] = six.text_type(connection['transfers'])
+    data['travelwith'] = ', '.join(connection['products'])
+    data['occupancy1st'] = occupancies.get(connection['capacity1st'], '')
+    data['occupancy2nd'] = occupancies.get(connection['capacity2nd'], '')
 
     return data
 
