@@ -32,7 +32,7 @@ Usage
      fahrplan [options] arguments
 
     Options:
-     -f, --full    Show full connection info
+     -f, --full    Show full connection info, including changes
      -i, --info    Verbose output
      -d, --debug   Debug output
      -v, --version Show version number

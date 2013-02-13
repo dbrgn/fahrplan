@@ -71,7 +71,7 @@ def main():
                 + ' {meta.title} [options] arguments\n'.format(meta=meta)
                 + '\n'
                 + 'Options:\n'
-                + ' -f, --full    Show full connection info\n'
+                + ' -f, --full    Show full connection info, including changes\n'
                 + ' -i, --info    Verbose output\n'
                 + ' -d, --debug   Debug output\n'
                 + ' -v, --version Show version number\n'
