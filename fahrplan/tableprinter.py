@@ -14,21 +14,24 @@ class Tableprinter(object):
     def __init__(self, widths, separator=' '):
         """Constructor for table printer.
 
-        Keyword arguments:
-        widths -- tuple containing the width for each column
-        separator -- the column separator (default ' ')
+        Args:
+            widths: Tuple containing the width for each column.
+            separator: The column separator (default ' ').
 
         """
         self.widths = widths
         self.separator = separator
-        self.encoding = sys.stdout.encoding or 'utf-8'
+        try:
+            self.encoding = sys.stdout.encoding or 'utf-8'
+        except AttributeError:
+            self.encoding = 'utf-8'
         logging.debug('Using output encoding %s' % self.encoding)
 
     def print_line(self, items):
         """Print data line.
 
-        Keyword arguments:
-        items -- tuple containing row data
+        Args:
+            items: Tuple containing row data.
 
         """
         pairs = zip(items, self.widths)
@@ -37,14 +40,23 @@ class Tableprinter(object):
             if not six.PY3:
                 out = out.encode(self.encoding, 'replace')
             print(out, end='')
-        print()
+        print()  # newline
 
-    def print_separator(self, char='-'):
+    def print_separator(self, char='-', cols=[]):
         """Print separator line.
 
-        Keyword arguments:
-        char -- character to use for printing the separator
+        Args:
+            char: Character to use for printing the separator.
+            cols: The 0 based column indexes, where the separator should be
+                printed (by default the line is printed across all columns)
 
         """
-        width = sum(self.widths) + len(self.separator) * len(self.widths)
-        print(char * width)
+        if not cols:
+            width = sum(self.widths) + len(self.separator) * len(self.widths)
+            print(char * width)
+        else:
+            for i in range(len(self.widths)):
+                symbol = char if i in cols else ' '
+                print(symbol * self.widths[i], end='')
+                print(self.separator, end='')
+            print()  # newline

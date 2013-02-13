@@ -3,6 +3,10 @@ from __future__ import print_function, division, absolute_import, unicode_litera
 
 import sys
 import datetime
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import BytesIO as StringIO
 
 import six
 import envoy
@@ -13,8 +17,9 @@ if sys.version_info[0] == 2 and sys.version_info[1] < 7:
 else:
     import unittest
 
-from .. import parser
 from .. import meta
+from .. import parser
+from ..tableprinter import Tableprinter
 
 monkey.patch_socket()
 
@@ -214,6 +219,33 @@ class TestLanguages(unittest.TestCase):
 
         stdout_values = [job.value.std_out for job in jobs]
         self.assertTrue(stdout_values[1:] == stdout_values[:-1])
+
+
+class TestTablePrinter(unittest.TestCase):
+
+    def setUp(self):
+        self.output = StringIO()
+        self.stdout = sys.stdout
+        sys.stdout = self.output
+
+    def tearDown(self):
+        self.output.close()
+        sys.stdout = self.stdout
+
+    def testSeparator(self):
+        printer = Tableprinter((3, 4, 5), '  ')
+        printer.print_separator('*')
+        self.assertEqual('******************\n', self.output.getvalue())
+
+    def testPartialSeparator(self):
+        printer = Tableprinter((2, 2, 3, 2), '+|+')
+        printer.print_separator(cols=[1, 2])
+        self.assertEqual('  +|+--+|+---+|+  +|+\n', self.output.getvalue())
+
+    def testLine(self):
+        printer = Tableprinter((4, 5, 6), '|')
+        printer.print_line(('Eggs', 'Bacon', 'Spam'))
+        self.assertEqual('Eggs|Bacon|Spam  |\n', self.output.getvalue())
 
 
 class RegressionTests(unittest.TestCase):
