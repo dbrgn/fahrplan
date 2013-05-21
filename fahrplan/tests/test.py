@@ -25,7 +25,10 @@ monkey.patch_socket()
 
 
 BASE_COMMAND = 'python -m fahrplan.main'
-ENCODING = sys.stdout.encoding or 'utf-8'
+try:
+    ENCODING = sys.stdout.encoding or 'utf-8'
+except AttributeError:
+    ENCODING = 'utf-8'
 
 
 class TestBasicArgumentHandling(unittest.TestCase):
