@@ -5,6 +5,9 @@ fahrplan
     :alt: Build status
     :target: http://travis-ci.org/dbrgn/fahrplan
 
+.. image:: https://pypip.in/d/fahrplan/badge.png
+        :target: https://crate.io/packages/fahrplan
+
 Goal: Simple access to the sbb timetable service from the commandline with human
 readable argument parsing.
 
