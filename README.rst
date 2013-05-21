@@ -71,13 +71,9 @@ a virtualenv)::
     $ pip install -r requirements.txt
     $ pip install -r requirements-dev.txt
 
-To run the tests, run the following commands::
+To run the test script::
 
-    $ python -m fahrplan.tests.test
-
-If you have fabric installed, you can also use the `test` command instead::
-
-    $ fab test
+    $ ./test.sh
 
 
 Sourcecode
