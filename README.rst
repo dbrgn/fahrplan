@@ -5,8 +5,13 @@ fahrplan
     :alt: Build status
     :target: http://travis-ci.org/dbrgn/fahrplan
 
+.. image:: https://coveralls.io/repos/dbrgn/fahrplan/badge.png
+    :alt: Coverage status
+    :target: https://coveralls.io/r/dbrgn/fahrplan
+
 .. image:: https://pypip.in/d/fahrplan/badge.png
-        :target: https://crate.io/packages/fahrplan
+    :alt: PyPI download stats
+    :target: https://crate.io/packages/fahrplan
 
 Goal: Simple access to the sbb timetable service from the commandline with human
 readable argument parsing.

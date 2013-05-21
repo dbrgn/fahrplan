@@ -4,3 +4,5 @@
 /dist/
 .pypirc
 *.egg-info
+.coverage
+.coveralls.yml

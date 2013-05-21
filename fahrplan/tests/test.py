@@ -10,8 +10,6 @@ except ImportError:
 
 import six
 import envoy
-import gevent
-from gevent import monkey
 if sys.version_info[0] == 2 and sys.version_info[1] < 7:
     import unittest2 as unittest
 else:
@@ -20,8 +18,6 @@ else:
 from .. import meta
 from .. import parser
 from ..tableprinter import Tableprinter
-
-monkey.patch_socket()
 
 
 BASE_COMMAND = 'python -m fahrplan.main'
@@ -206,21 +202,16 @@ class TestLanguages(unittest.TestCase):
         Test a query in three languages and assert that the output of all
         three queries is equal.
 
-        The test is run using async gevent tasks, so that they run as close
-        together as possible. (We don't want different output due to timing
-        issues...)
-
         """
         args = ['von bern nach basel via zürich ab 15:00',
                 'from bern to basel via zürich departure 15:00',
                 'de bern à basel via zürich départ 15:00']
-        jobs = [gevent.spawn(envoy.run, '{0} {1}'.format(BASE_COMMAND, arg).encode(ENCODING)) for arg in args]
-        gevent.joinall(jobs, timeout=10)
+        jobs = [envoy.run('{0} {1}'.format(BASE_COMMAND, arg).encode(ENCODING)) for arg in args]
 
-        statuscodes = [job.value.status_code for job in jobs]
+        statuscodes = [job.status_code for job in jobs]
         self.assertEqual([0, 0, 0], statuscodes)
 
-        stdout_values = [job.value.std_out for job in jobs]
+        stdout_values = [job.std_out for job in jobs]
         self.assertTrue(stdout_values[1:] == stdout_values[:-1])
 
 
