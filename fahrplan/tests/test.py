@@ -162,7 +162,7 @@ class TestBasicQuery(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """Setup method that is only run once."""
-        cmd = '{0} von basel nach zürich ab 14:00'.format(BASE_COMMAND)
+        cmd = '{0} von basel nach zürich ab 07:00'.format(BASE_COMMAND)
         cls.r = envoy.run(cmd.encode(ENCODING))
         cls.rows = cls.r.std_out.split(b'\n')
 
