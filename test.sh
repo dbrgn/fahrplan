@@ -1,4 +1,5 @@
 #!/bin/bash
 nosetests \
     --with-cov \
-    --cov fahrplan
+    --cov fahrplan \
+    --verbosity=2
