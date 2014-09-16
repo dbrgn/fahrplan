@@ -1,4 +1,3 @@
-envoy==0.0.2
-unittest2==0.5.1
-nose-cov==1.6
-coveralls==0.1.1
+envoy
+unittest2
+nose-cov
