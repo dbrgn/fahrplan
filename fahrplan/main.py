@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # A SBB/CFF/FFS commandline based timetable client.
-# Copyright (C) 2012 Danilo Bargen
+# Copyright (C) 2012-2014 Danilo Bargen
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -212,7 +212,7 @@ def main():
                 (lambda: '2: %s' % row['occupancy2nd'] if row.get('occupancy2nd') else '-')(),
             )
             tableprinter.print_line(cols_to)
-            
+
             if j != len(conn['sections']):
                 tableprinter.print_separator(cols=[1,2,3,4,8])
         tableprinter.print_separator()
