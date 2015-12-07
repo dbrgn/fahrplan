@@ -60,6 +60,8 @@ def main():
     assert_enough_arguments(sys.argv)
 
     tokens = sys.argv[1:]
+    proxy_host = ''
+
     global output_format
     if isinstance(tokens[0], six.binary_type):
         tokens = [arg.decode(ENCODING) for arg in tokens]
@@ -76,6 +78,7 @@ def main():
                 + ' -d, --debug   Debug output\n'
                 + ' -v, --version Show version number\n'
                 + ' -h, --help    Show this help\n'
+                + ' -p, --proxy   Use proxy for network connections\n'
                 + '\n'
                 + 'Arguments:\n'
                 + ' You can use natural language arguments using the following\n'
@@ -91,6 +94,7 @@ def main():
                 + ' fahrplan from thun to burgdorf\n'
                 + ' fahrplan via bern nach basel von zürich, helvetiaplatz ab 15:35\n'
                 + ' fahrplan de lausanne à vevey arrivée minuit\n'
+                + ' fahrplan -p proxy.mydomain.ch:8080 de lausanne à vevey arrivée minuit\n'
                 + '\n')
             print(out.encode(ENCODING, 'replace'))
             sys.exit(0)
@@ -103,6 +107,9 @@ def main():
             logging.basicConfig(level=logging.INFO)
         if tokens[0] in ['-d', '--debug']:
             logging.basicConfig(level=logging.DEBUG)
+        if tokens[0] in ['-p', '--proxy']:
+            proxy_host = tokens[1]
+            del tokens[0]
         del tokens[0]
 
     assert_enough_arguments(tokens)
@@ -117,7 +124,7 @@ def main():
 
     url = '%s/connections' % API_URL
     try:
-        response = requests.get(url, params=args)
+        response = requests.get(url, params=args, proxies={'http' : proxy_host})
     except requests.exceptions.ConnectionError:
         perror('Error: Could not reach network.')
         sys.exit(1)
