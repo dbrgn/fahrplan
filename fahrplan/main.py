@@ -60,7 +60,7 @@ def main():
     assert_enough_arguments(sys.argv)
 
     tokens = sys.argv[1:]
-    proxy_host = ''
+    proxy_host = None
 
     global output_format
     if isinstance(tokens[0], six.binary_type):
@@ -78,7 +78,7 @@ def main():
                 + ' -d, --debug   Debug output\n'
                 + ' -v, --version Show version number\n'
                 + ' -h, --help    Show this help\n'
-                + ' -p, --proxy   Use proxy for network connections\n'
+                + ' -p, --proxy   Use proxy for network connections (host:port)\n'
                 + '\n'
                 + 'Arguments:\n'
                 + ' You can use natural language arguments using the following\n'
@@ -123,8 +123,12 @@ def main():
     """2. Do API request."""
 
     url = '%s/connections' % API_URL
+    kwargs = {'params': args}
+    if proxy_host is not None:
+        kwargs['proxies'] = {'http' : proxy_host}
+
     try:
-        response = requests.get(url, params=args, proxies={'http' : proxy_host})
+        response = requests.get(url, **kwargs)
     except requests.exceptions.ConnectionError:
         perror('Error: Could not reach network.')
         sys.exit(1)
