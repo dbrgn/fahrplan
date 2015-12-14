@@ -45,6 +45,7 @@ Usage
      -d, --debug   Debug output
      -v, --version Show version number
      -h, --help    Show this help
+     -p, --proxy   Use proxy for network connections (host:port)
 
     Arguments:
      You can use natural language arguments using the following
