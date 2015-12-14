@@ -109,7 +109,7 @@ def main():
             logging.basicConfig(level=logging.DEBUG)
         if tokens[0] in ['-p', '--proxy']:
             proxy_host = tokens[1]
-            del tokens[0]
+            del tokens[1]
         del tokens[0]
 
     assert_enough_arguments(tokens)
