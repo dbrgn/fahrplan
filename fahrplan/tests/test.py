@@ -13,7 +13,7 @@ else:
 
 from .. import meta
 from .. import parser
-from ..tableprinter import Tableprinter
+#from ..tableprinter import Tableprinter
 
 
 BASE_COMMAND = 'python -m fahrplan.main'
