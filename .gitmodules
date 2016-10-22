@@ -1,3 +1,3 @@
 [submodule "texttable"]
 	path = texttable
-	url = git@github.com:frinkelpi/texttable.git
+	url = https://github.com/frinkelpi/texttable.git
