@@ -18,9 +18,8 @@ readable argument parsing.
 
 Relies on the public transport API by opendata.ch: http://transport.opendata.ch/
 
-Fahrplan support both Python 2.6 and 2.7. PyPy should be working (except for the
-tests), but there is no official support until the tests are fixed. Python 3.3
-support is under way.
+Fahrplan support both Python 2.6, 2.7 and 3.5. PyPy should be working (except for the
+tests), but there is no official support until the tests are fixed.
 
 
 Installing
@@ -69,15 +68,9 @@ Usage
 Testing
 -------
 
-Prior to testing, you should install the required libraries (preferrably in
-a virtualenv)::
+Testing is done using tox and nosetests.
 
-    $ virtualenv --no-site-packages VIRTUAL
-    $ . VIRTUAL/bin/activate
-    $ pip install -r requirements.txt
-    $ pip install -r requirements-dev.txt
-
-To run the test script::
+To run the test script for Python 2 and 3::
 
     $ ./test.sh
 
