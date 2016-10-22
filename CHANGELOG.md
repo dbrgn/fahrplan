@@ -14,7 +14,11 @@ Possible log types:
 ## [Unreleased]
 
  - [added] Support for HTTP proxies (#21)
+ - [added] Display train numbers
+ - [added] Date parsing (#10) and support of time without columns (#17)
+ - [changed] Improve display by using texttable
  - [changed] Improve code modularity, use argparse for argument parsing
+ - [fixed] Python 2 and 3 bugfixes. Tests using nose2. Removed dependency on envoy.
 
 ## [0.2.3] - 2014-09-18
 
