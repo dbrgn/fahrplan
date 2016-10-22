@@ -1,4 +1,3 @@
 #!/bin/bash
-nosetests \
-    --with-cov \
-    --cov fahrplan
+tox
+flake8 --ignore E501,E128,W503 fahrplan/*.py

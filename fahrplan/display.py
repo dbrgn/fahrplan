@@ -1,49 +1,52 @@
 # -*- coding: utf-8 -*-
-import six
 from texttable.texttable import Texttable
+
+
 # Output formats
 class Formats(object):
     SIMPLE = 0
     FULL = 1
-    
-def _getConnectionRow(i,c):
+
+
+def _getConnectionRow(i, c):
     """
     Get table row for connection.
     """
     sections = c["sections"]
-    firstClass = True
-    #Create row
+    # Create row
     row = [i]
     for p in [
-            lambda x : [x["station_from"], x["station_to"]], #Station
-            lambda x : [x["platform_from"], x["platform_to"]], #Platform
-            lambda x : [x[q].strftime('%d/%m/%y') for q in ["departure","arrival"]], #Date
-            lambda x : [x[q].strftime('%H:%M') for q in ["departure","arrival"]], #Time
-            lambda x : [str((x["arrival"]-x["departure"])).rsplit(":",1)[0], " "], #Duration
+            lambda x: [x["station_from"], x["station_to"]],  # Station
+            lambda x: [x["platform_from"], x["platform_to"]],  # Platform
+            lambda x: [x[q].strftime('%d/%m/%y') for q in ["departure", "arrival"]],  # Date
+            lambda x: [x[q].strftime('%H:%M') for q in ["departure", "arrival"]],  # Time
+            lambda x: [str((x["arrival"] - x["departure"])).rsplit(":", 1)[0], " "],  # Duration
             None,
-            lambda x : [x["travelwith"], " "], #With
-            lambda x : ["1: "+x["occupancy1st"], "2: "+x["occupancy2nd"]] #Occupancy
+            lambda x: [x["travelwith"], " "],  # With
+            lambda x: ["1: " + x["occupancy1st"], "2: " + x["occupancy2nd"]]  # Occupancy
     ]:
-        if p==None:
+        if p is None:
             row.append(c["change_count"])
         else:
             row.append("\n \n".join(["\n".join(p(s)) for s in sections]))
     return row
-def displayConnections(connections, output_format):
+
+
+def connectionsTable(connections, output_format):
     """
-    Display connections in the given output format.
+    Get connections in the given output format.
     """
     table = Texttable(max_width=0)
-    #Alignments
-    table.set_cols_valign(["m","t","t","t","t","t","m","t","t"])
-    table.set_cols_align(["l","l","c","l","l","c","c","l","l"])
-    #Header
-    table.add_row(["#", "Station", "Platform","Date","Time","Duration","Chg.","With","Occupancy"])
-    #Connection rows
-    for i,c in enumerate(connections):
-        table.add_row(_getConnectionRow(i,c))
-    #Display
-    print(table.draw())
+    # Alignments
+    table.set_cols_valign(["m", "t", "t", "t", "t", "t", "m", "t", "t"])
+    table.set_cols_align(["l", "l", "c", "l", "l", "c", "c", "l", "l"])
+    # Header
+    table.add_row(["#", "Station", "Platform", "Date", "Time", "Duration", "Chg.", "With", "Occupancy"])
+    # Connection rows
+    for i, c in enumerate(connections):
+        table.add_row(_getConnectionRow(i, c))
+    # Display
+    return table.draw()
 # Old display method:
 # from .tableprinter import Tableprinter
 # def displayConnections(connections, output_format):

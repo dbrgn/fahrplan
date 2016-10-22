@@ -3,13 +3,9 @@ from __future__ import print_function, division, absolute_import, unicode_litera
 
 import sys
 import datetime
-try:
-    from StringIO import StringIO
-except ImportError:
-    from io import BytesIO as StringIO
 
-import six
-import envoy
+#import envoy
+from subprocess import Popen, PIPE
 if sys.version_info[0] == 2 and sys.version_info[1] < 7:
     import unittest2 as unittest
 else:
@@ -26,23 +22,33 @@ try:
 except AttributeError:
     ENCODING = 'utf-8'
 
+#Run command
+class CommandOutput(object):
+    def __init__(self, stdout, stderr, code):
+        self.std_err = stderr
+        self.std_out = stdout
+        self.status_code = code
+def runCommand(command):
+    p = Popen(command, stdout=PIPE, stderr=PIPE, shell=True)
+    stdout, stderr = p.communicate()
+    return CommandOutput(stdout.decode(ENCODING), stderr.decode(ENCODING), p.returncode)
 
 class TestBasicArgumentHandling(unittest.TestCase):
 
     def testRequiredArgumentsMissing(self):
-        r = envoy.run('{0} von bern'.format(BASE_COMMAND))
+        r = runCommand('{0} von bern'.format(BASE_COMMAND))
         self.assertEqual('Error: "from" and "to" arguments must be present!\n', r.std_err)
 
     def testVersionInfo(self):
         args = ['-v', '--version', '-d -i -v']
         for arg in args:
-            r = envoy.run('{0} {1}'.format(BASE_COMMAND, arg))
+            r = runCommand('{0} {1}'.format(BASE_COMMAND, arg))
             self.assertEqual('%s %s\n' % (meta.title, meta.version), r.std_out)
 
     def testHelp(self):
         args = ['-h', '--help', '-d -i --help']
         for arg in args:
-            r = envoy.run('{0} {1}'.format(BASE_COMMAND, arg))
+            r = runCommand('{0} {1}'.format(BASE_COMMAND, arg))
             self.assertTrue(meta.description in r.std_out)
             self.assertTrue('usage:' in r.std_out)
             self.assertTrue('optional arguments:' in r.std_out)
@@ -155,8 +161,8 @@ class TestBasicQuery(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """Setup method that is only run once."""
-        cmd = '{0} von basel nach zürich ab 07:00'.format(BASE_COMMAND)
-        cls.r = envoy.run(cmd)
+        cmd = '{0} von basel nach zürich ab 07:00'.format(BASE_COMMAND)        
+        cls.r = runCommand(cmd)
         cls.rows = cls.r.std_out.split('\n')
 
     def returnStatus(self):
@@ -194,7 +200,7 @@ class TestLanguages(unittest.TestCase):
         args = ['von bern nach basel via zürich ab 15:00',
                 'from bern to basel via zürich departure 15:00',
                 'de bern à basel via zürich départ 15:00']
-        jobs = [envoy.run('{0} {1}'.format(BASE_COMMAND, arg)) for arg in args]
+        jobs = [runCommand('{0} {1}'.format(BASE_COMMAND, arg)) for arg in args]
 
         statuscodes = [job.status_code for job in jobs]
         self.assertEqual([0, 0, 0], statuscodes)
@@ -236,7 +242,7 @@ class RegressionTests(unittest.TestCase):
         """Github issue #11:
         Don't allow both departure and arrival time."""
         args = 'von bern nach basel ab 15:00 an 16:00'
-        query = envoy.run('{0} {1}'.format(BASE_COMMAND, args))
+        query = runCommand('{0} {1}'.format(BASE_COMMAND, args))
         self.assertEqual('Error: You can\'t specify both departure *and* arrival time.\n',
                 query.std_err)
 
@@ -244,7 +250,7 @@ class RegressionTests(unittest.TestCase):
         """Github issue #13:
         Station not found: ValueError: max() arg is an empty sequence."""
         args = 'von zuerich manegg nach nach stadelhofen'
-        query = envoy.run('{0} {1}'.format(BASE_COMMAND, args))
+        query = runCommand('{0} {1}'.format(BASE_COMMAND, args))
         self.assertEqual(0, query.status_code, 'Program terminated with statuscode != 0')
 
 

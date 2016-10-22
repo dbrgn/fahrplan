@@ -4,7 +4,8 @@ import logging
 import json
 import dateutil.parser
 import six
-from pprint import pprint
+import sys
+from .helpers import perror
 
 occupancies = {
     None: '',
@@ -16,27 +17,28 @@ occupancies = {
 }
 API_URL = 'http://transport.opendata.ch/v1'
 
+
 def _APIRequest(action, params, proxy=None):
     """
     Perform an API request on transport.opendata.ch
     """
-    #Send request
-    url="{}/{}".format(API_URL,action)
+    # Send request
+    url = "{}/{}".format(API_URL, action)
     kwargs = {'params': params}
     if proxy is not None:
-        kwargs['proxies'] = {'http' : proxy}
+        kwargs['proxies'] = {'http': proxy}
     try:
         response = requests.get(url, **kwargs)
     except requests.exceptions.ConnectionError:
         perror('Error: Could not reach network.')
         sys.exit(1)
-    #Check response status
+    # Check response status
     logging.debug('Response status: {0!r}'.format(response.status_code))
     if not response.ok:
         verbose_status = requests.status_codes._codes[response.status_code][0]
         perror('Server Error: HTTP {} ({})'.format(response.status_code, verbose_status))
         sys.exit(1)
-    #Convert response to json
+    # Convert response to json
     try:
         return json.loads(response.text)
     except ValueError:
@@ -44,6 +46,8 @@ def _APIRequest(action, params, proxy=None):
         logging.debug('Response content: {0!r}'.format(response.content))
         perror('Error: Invalid API response (invalid JSON)')
         sys.exit(1)
+
+
 def _parse_section(con_section, connection):
     """
     Parse the section of a connection
@@ -70,6 +74,8 @@ def _parse_section(con_section, connection):
         section['occupancy1st'] = occupancies.get(connection['capacity1st'], '')
         section['occupancy2nd'] = occupancies.get(connection['capacity2nd'], '')
     return section
+
+
 def _parse_connection(connection, include_sections=False):
     """Parse a connection.
 
@@ -86,38 +92,40 @@ def _parse_connection(connection, include_sections=False):
         contained in a list.
     """
     data = {}
-    con_from = connection['from']
-    con_to = connection['to']
     walk = False
-    keyfunc = lambda s: s['departure']['departure']
+
+    def keyfunc(s):
+        return s['departure']['departure']
     data['change_count'] = six.text_type(connection['transfers'])
     data['travelwith'] = ', '.join(connection['products'])
     data['occupancy1st'] = occupancies.get(connection['capacity1st'], '')
     data['occupancy2nd'] = occupancies.get(connection['capacity2nd'], '')
-    #Sections
+    # Sections
     con_sections = sorted(connection['sections'], key=keyfunc)
     data['sections'] = []
     if include_sections:
-        #Full display
+        # Full display
         for con_section in con_sections:
             section = _parse_section(con_section, connection)
             if con_section.get('walk'):
                 walk = True
             data["sections"].append(section)
     else:
-        #Shortened display, parse only departure and arrivals sections
-        section =  _parse_section(con_sections[0], connection)
+        # Shortened display, parse only departure and arrivals sections
+        section = _parse_section(con_sections[0], connection)
         to = _parse_section(con_sections[-1], connection)
-        for p in ["station_to","arrival"]:
+        for p in ["station_to", "arrival"]:
             section[p] = to[p]
-        #Get information from connection
+        # Get information from connection
         for p in ["occupancy2nd", "occupancy1st", "travelwith", "change_count"]:
             section[p] = data[p]
         data['sections'] = [section]
-    #Walk
+    # Walk
     if walk:
         data['travelwith'] += ', Walk'
     return data
+
+
 def getConnections(request, include_sections=False, proxy=None):
     """
     Get the connections of a request

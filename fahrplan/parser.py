@@ -85,7 +85,9 @@ def _process_tokens(tokens, sloppy_validation=False):
 def _detect_language(keyword_dicts, tokens):
     """Detect the language of the tokens by finding the highest intersection
     with the keywords of a specific language."""
-    intersection_count = lambda a, b: len(set(a).intersection(b))
+
+    def intersection_count(a, b):
+        return len(set(a).intersection(b))
 
     counts = []
     for lang, keywords in keyword_dicts.items():
@@ -191,8 +193,6 @@ def parse_input(tokens):
 
     logging.debug('Data: ' + repr(data))
     return data, language
-
-
     """
     transport.opendata.ch request params:
     x from
