@@ -13,22 +13,25 @@ fahrplan
     :alt: PyPI download stats
     :target: https://crate.io/packages/fahrplan
 
-Goal: Simple access to the sbb timetable service from the commandline with human
+Goal: Simple access to the SBB/CFF/FFS timetable service from the commandline with human
 readable argument parsing.
 
 Relies on the public transport API by opendata.ch: http://transport.opendata.ch/
 
-Fahrplan support both Python 2.6, 2.7 and 3.5. PyPy should be working (except for the
+Fahrplan supports Python 2.6, 2.7 and 3.5. PyPy should be working (except for the
 tests), but there is no official support until the tests are fixed.
 
 
 Installing
 ----------
 
-To install current version using pip, issue::
+To install the current version using pip, issue::
 
     $ sudo pip install fahrplan
 
+To install from this repository, clone it and use::
+
+    $ python setup.py fahrplan
 
 Usage
 -----
