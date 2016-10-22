@@ -60,13 +60,15 @@ Usage
      de -- von, nach, via, ab, an
      fr -- de, à, via, départ, arrivée
 
-     You can also use natural time specifications in your language, like "now",
-     "immediately", "noon" or "midnight".
+     You can also use natural time and date specifications in your language, like
+     - "now", "immediately", "at noon", "at midnight",
+     - "tomorrow", "monday", "in 2 days", "22/11".
 
     Examples:
      fahrplan from thun to burgdorf
      fahrplan via bern nach basel von zürich, helvetiaplatz ab 15:35
      fahrplan de lausanne à vevey arrivée minuit
+     fahrplan from Bern to Zurich departure 13:00 monday
      fahrplan -p proxy.mydomain.ch:8080 de lausanne à vevey arrivée minuit
 
 .. image:: https://raw.github.com/dbrgn/fahrplan/master/screenshot.png

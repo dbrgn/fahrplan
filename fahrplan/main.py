@@ -46,13 +46,15 @@ def main():
                 + u' de -- von, nach, via, ab, an\n'
                 + u' fr -- de, à, via, départ, arrivée\n'
                 + u'\n'
-                + u' You can also use natural time specifications in your language, like "now",\n'
-                + u' "immediately", "noon" or "midnight".\n'
+                + u' You can also use natural time and date specifications in your language, like:\n'
+                + u' - "now", "immediately", "at noon", "at midnight",\n'
+                + u' - "tomorrow", "monday", "in 2 days", "22/11".\n'
                 + u'\n'
                 + u'Examples:\n'
                 + u' fahrplan from thun to burgdorf\n'
                 + u' fahrplan via bern nach basel von zürich, helvetiaplatz ab 15:35\n'
                 + u' fahrplan de lausanne à vevey arrivée minuit\n'
+                + u' fahrplan from Bern to Zurich departure 13:00 monday\n'
                 + u' fahrplan -p proxy.mydomain.ch:8080 de lausanne à vevey arrivée minuit\n'
                 + u'\n', formatter_class=argparse.RawDescriptionHelpFormatter, prog=meta.title, description=meta.description, add_help=False)
     parser.add_argument("--full", "-f", action="store_true", help="Show full connection info, including changes")
@@ -89,7 +91,6 @@ def main():
     except ValueError as e:
         perror('Error:', e)
         sys.exit(1)
-
     # 2. API request
     data = getConnections(args, (output_format == Formats.FULL), proxy_host)
     connections = data["connections"]
