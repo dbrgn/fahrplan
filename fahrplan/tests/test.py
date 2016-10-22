@@ -2,7 +2,7 @@
 from __future__ import print_function, division, absolute_import, unicode_literals
 
 import sys
-import datetime
+from datetime import datetime, timedelta
 
 #import envoy
 from subprocess import Popen, PIPE
@@ -111,7 +111,7 @@ class TestInputParsing(unittest.TestCase):
         self.assertEqual(expected, parser.parse_input(tokens)[0])
 
     def testImmediateTimes(self):
-        now = datetime.datetime.now().strftime('%H:%M')
+        now = datetime.now().strftime('%H:%M')
         queries = [
             'von basel nach bern ab jetzt'.split(),
             'von basel nach bern ab sofort'.split(),
@@ -154,7 +154,18 @@ class TestInputParsing(unittest.TestCase):
         for tokens in queries:
             data, _ = parser.parse_input(tokens)
             self.assertEqual('12:00', data['time'])
-
+    def testDates(self):
+        year = datetime.now().year
+        queries = [
+            'von basel nach bern ab 22/10/2016 13:00'.split(),
+            'von basel nach bern ab um 22/10 13:00'.split(),
+            'from basel to bern departure 22/10 13:00'.split(),
+            'from basel to bern departure 22/10 13:00'.split(),
+        ]
+        for tokens in queries:
+            data, _ = parser.parse_input(tokens)
+            self.assertEqual('13:00', data['time'])
+            self.assertEqual('{}/10/22'.format(year), data['date'])
 
 class TestBasicQuery(unittest.TestCase):
 
@@ -210,26 +221,21 @@ class TestLanguages(unittest.TestCase):
 
 
 # class TestTablePrinter(unittest.TestCase):
-
 #     def setUp(self):
 #         self.output = StringIO()
 #         self.stdout = sys.stdout
 #         sys.stdout = self.output
-
 #     def tearDown(self):
 #         self.output.close()
 #         sys.stdout = self.stdout
-
 #     def testSeparator(self):
 #         printer = Tableprinter((3, 4, 5), '  ')
 #         printer.print_separator('*')
 #         self.assertEqual('******************\n', self.output.getvalue())
-
 #     def testPartialSeparator(self):
 #         printer = Tableprinter((2, 2, 3, 2), '+|+')
 #         printer.print_separator(cols=[1, 2])
 #         self.assertEqual('  +|+--+|+---+|+  +|+\n', self.output.getvalue())
-
 #     def testLine(self):
 #         printer = Tableprinter((4, 5, 6), '|')
 #         printer.print_line(('Eggs', 'Bacon', 'Spam'))
