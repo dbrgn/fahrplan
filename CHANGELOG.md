@@ -14,6 +14,7 @@ Possible log types:
 ## [Unreleased]
 
  - [added] Support for HTTP proxies (#21)
+ - [changed] Improve code modularity, use argparse for argument parsing
 
 ## [0.2.3] - 2014-09-18
 

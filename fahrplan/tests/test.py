@@ -29,32 +29,25 @@ except AttributeError:
 
 class TestBasicArgumentHandling(unittest.TestCase):
 
-    def testTooFewArguments(self):
-        args = ['', '-i', '-d', '-i -d']
-        for arg in args:
-            r = envoy.run(b'{0} {1}'.format(BASE_COMMAND, arg))
-            self.assertEqual('Not enough arguments.\n', r.std_err)
-
     def testRequiredArgumentsMissing(self):
-        r = envoy.run(b'{0} von bern'.format(BASE_COMMAND))
+        r = envoy.run('{0} von bern'.format(BASE_COMMAND))
         self.assertEqual('Error: "from" and "to" arguments must be present!\n', r.std_err)
 
     def testVersionInfo(self):
         args = ['-v', '--version', '-d -i -v']
         for arg in args:
-            r = envoy.run(b'{0} {1}'.format(BASE_COMMAND, arg))
+            r = envoy.run('{0} {1}'.format(BASE_COMMAND, arg))
             self.assertEqual('%s %s\n' % (meta.title, meta.version), r.std_out)
 
     def testHelp(self):
         args = ['-h', '--help', '-d -i --help']
         for arg in args:
-            r = envoy.run(b'{0} {1}'.format(BASE_COMMAND, arg))
-            title = '{meta.title}: {meta.description}'.format(meta=meta).encode(ENCODING)
-            self.assertTrue(title in r.std_out)
-            self.assertTrue(b'Usage:' in r.std_out)
-            self.assertTrue(b'Options:' in r.std_out)
-            self.assertTrue(b'Arguments:' in r.std_out)
-            self.assertTrue(b'Examples:' in r.std_out)
+            r = envoy.run('{0} {1}'.format(BASE_COMMAND, arg))
+            self.assertTrue(meta.description in r.std_out)
+            self.assertTrue('Usage:' in r.std_out)
+            self.assertTrue('Options:' in r.std_out)
+            self.assertTrue('Arguments:' in r.std_out)
+            self.assertTrue('Examples:' in r.std_out)
 
 
 class TestInputParsing(unittest.TestCase):
@@ -163,8 +156,8 @@ class TestBasicQuery(unittest.TestCase):
     def setUpClass(cls):
         """Setup method that is only run once."""
         cmd = '{0} von basel nach zürich ab 07:00'.format(BASE_COMMAND)
-        cls.r = envoy.run(cmd.encode(ENCODING))
-        cls.rows = cls.r.std_out.split(b'\n')
+        cls.r = envoy.run(cmd)
+        cls.rows = cls.r.std_out.split('\n')
 
     def returnStatus(self):
         """The command should return the status code 0."""
@@ -188,11 +181,11 @@ class TestBasicQuery(unittest.TestCase):
     def testStationNames(self):
         """Station names should be "Basel SBB" and "Zürich HB"."""
         if six.PY3:  # quick and dirty
-            self.assertTrue(self.rows[2].decode().startswith('1  | Basel SBB'))
-            self.assertTrue(self.rows[3].decode().startswith('   | Zürich HB'))
+            self.assertTrue(self.rows[2].startswith('1  | Basel SBB'))
+            self.assertTrue(self.rows[3].startswith('   | Zürich HB'))
         else:
-            self.assertTrue(self.rows[2].startswith(b'1  | Basel SBB'))
-            self.assertTrue(self.rows[3].startswith(b'   | Z\xc3\xbcrich HB'))
+            self.assertTrue(self.rows[2].startswith('1  | Basel SBB'))
+            self.assertTrue(self.rows[3].startswith('   | Z\xc3\xbcrich HB'))
 
 
 class TestLanguages(unittest.TestCase):
@@ -206,7 +199,7 @@ class TestLanguages(unittest.TestCase):
         args = ['von bern nach basel via zürich ab 15:00',
                 'from bern to basel via zürich departure 15:00',
                 'de bern à basel via zürich départ 15:00']
-        jobs = [envoy.run('{0} {1}'.format(BASE_COMMAND, arg).encode(ENCODING)) for arg in args]
+        jobs = [envoy.run('{0} {1}'.format(BASE_COMMAND, arg)) for arg in args]
 
         statuscodes = [job.status_code for job in jobs]
         self.assertEqual([0, 0, 0], statuscodes)
@@ -248,7 +241,7 @@ class RegressionTests(unittest.TestCase):
         """Github issue #11:
         Don't allow both departure and arrival time."""
         args = 'von bern nach basel ab 15:00 an 16:00'
-        query = envoy.run(b'{0} {1}'.format(BASE_COMMAND, args))
+        query = envoy.run('{0} {1}'.format(BASE_COMMAND, args))
         self.assertEqual('Error: You can\'t specify both departure *and* arrival time.\n',
                 query.std_err)
 
@@ -256,7 +249,7 @@ class RegressionTests(unittest.TestCase):
         """Github issue #13:
         Station not found: ValueError: max() arg is an empty sequence."""
         args = 'von zuerich manegg nach nach stadelhofen'
-        query = envoy.run(b'{0} {1}'.format(BASE_COMMAND, args))
+        query = envoy.run('{0} {1}'.format(BASE_COMMAND, args))
         self.assertEqual(0, query.status_code, 'Program terminated with statuscode != 0')
 
 
