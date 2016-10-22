@@ -58,7 +58,7 @@ class TestBasicArgumentHandling(unittest.TestCase):
 
 class TestInputParsing(unittest.TestCase):
 
-    valid_expected_result = {'arrival': '19:00', 'departure': '18:00', 'from': 'Zürich', 'to': 'Locarno', 'via': 'Genève'}
+    valid_expected_result = {'arrival': '19:00', 'departure': '18:30', 'from': 'Zürich', 'to': 'Locarno', 'via': 'Genève'}
 
     def testEmptyArguments(self):
         tokens = []
@@ -79,19 +79,19 @@ class TestInputParsing(unittest.TestCase):
         self.assertIsNone(language)
 
     def testValidArgumentsEn(self):
-        tokens = 'from Zürich to Locarno via Genève departure 18:00 arrival 19:00'.split()
+        tokens = 'from Zürich to Locarno via Genève departure 18:30 arrival 19:00'.split()
         data, language = parser._process_tokens(tokens, sloppy_validation=True)
         self.assertEqual(self.valid_expected_result, data)
         self.assertEqual('en', language)
 
     def testValidArgumentsDe(self):
-        tokens = 'von Zürich nach Locarno via Genève ab 18:00 an 19:00'.split()
+        tokens = 'von Zürich nach Locarno via Genève ab 18:30 an 19:00'.split()
         data, language = parser._process_tokens(tokens, sloppy_validation=True)
         self.assertEqual(self.valid_expected_result, data)
         self.assertEqual('de', language)
 
-    def testValidArgumentsFr(self):
-        tokens = 'de Zürich à Locarno via Genève départ 18:00 arrivée 19:00'.split()
+    def testValidArgumentsFr(self):        
+        tokens = 'de Zürich à Locarno via Genève départ 18:30 arrivée 19:00'.split()
         data, language = parser._process_tokens(tokens, sloppy_validation=True)
         self.assertEqual(self.valid_expected_result, data)
         self.assertEqual('fr', language)
@@ -101,8 +101,8 @@ class TestInputParsing(unittest.TestCase):
         self.assertRaises(ValueError, parser.parse_input, tokens)
 
     def testBasicDepartureTime(self):
-        tokens = 'von basel nach bern ab 18:00'.split()
-        expected = {'from': 'basel', 'time': '18:00', 'to': 'bern'}
+        tokens = 'von basel nach bern ab 1945'.split()
+        expected = {'from': 'basel', 'time': '19:45', 'to': 'bern'}
         self.assertEqual(expected, parser.parse_input(tokens)[0])
 
     def testBasicArrivalTime(self):
@@ -261,4 +261,8 @@ class RegressionTests(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    tokens = 'de Zürich à Locarno via Genève départ 1830 arrivée 19:00'.split()
+    data, language = parser._process_tokens(tokens, sloppy_validation=True)
+    print(data)
+    exit()
+    #unittest.main()
