@@ -55,7 +55,7 @@ def _parse_section(con_section, connection):
     section = {}
     section['station_from'] = departure['station']['name']
     section['station_to'] = arrival['station']['name']
-    #section['travelwith'] = journey["name"]
+    section['travelwith'] = journey["name"]
     section['departure'] = dateutil.parser.parse(departure['departure'])
     section['arrival'] = dateutil.parser.parse(arrival['arrival'])
     section['platform_from'] = 'Walk' if walk else departure['platform']
@@ -90,26 +90,33 @@ def _parse_connection(connection, include_sections=False):
     con_to = connection['to']
     walk = False
     keyfunc = lambda s: s['departure']['departure']
+    data['change_count'] = six.text_type(connection['transfers'])
+    data['travelwith'] = ', '.join(connection['products'])
+    data['occupancy1st'] = occupancies.get(connection['capacity1st'], '')
+    data['occupancy2nd'] = occupancies.get(connection['capacity2nd'], '')
+    #Sections
     con_sections = sorted(connection['sections'], key=keyfunc)
-
     data['sections'] = []
     if include_sections:
+        #Full display
         for con_section in con_sections:
             section = _parse_section(con_section, connection)
             if con_section.get('walk'):
                 walk = True
-            data['sections'].append(section)
+            data["sections"].append(section)
     else:
-        con_section = {'departure': connection['from'], 'arrival': connection['to']}
-        data['sections'].append(_parse_section(con_section, connection))
-
-    data['change_count'] = six.text_type(connection['transfers'])
-    data['travelwith'] = ', '.join(connection['products'])
+        #Shortened display, parse only departure and arrivals sections
+        section =  _parse_section(con_sections[0], connection)
+        to = _parse_section(con_sections[-1], connection)
+        for p in ["station_to","arrival"]:
+            section[p] = to[p]
+        #Get information from connection
+        for p in ["occupancy2nd", "occupancy1st", "travelwith", "change_count"]:
+            section[p] = data[p]
+        data['sections'] = [section]
+    #Walk
     if walk:
         data['travelwith'] += ', Walk'
-    data['occupancy1st'] = occupancies.get(connection['capacity1st'], '')
-    data['occupancy2nd'] = occupancies.get(connection['capacity2nd'], '')
-
     return data
 def getConnections(request, include_sections=False, proxy=None):
     """
