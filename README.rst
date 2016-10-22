@@ -18,7 +18,7 @@ readable argument parsing.
 
 Relies on the public transport API by opendata.ch: http://transport.opendata.ch/
 
-Fahrplan supports Python 2.6, 2.7 and 3.5. PyPy should be working (except for the
+Fahrplan supports Python 2.7 and 3.5. PyPy should be working (except for the
 tests), but there is no official support until the tests are fixed.
 
 
