@@ -1,6 +1,10 @@
 [run]
 source = fahrplan
-omit = */tests/*
+omit =
+     */tests/*
+     */.tox/*
+     */texttable/*
+     setup.py
 branch = True
 
 [report]
