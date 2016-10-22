@@ -35,16 +35,23 @@ Usage
 
 ``fahrplan --help``::
 
-    Usage:
-     fahrplan [options] arguments
+    usage: fahrplan [--full] [--info] [--debug] [--help] [--version]
+		    [--proxy PROXY]
+		    ...
 
-    Options:
-     -f, --full    Show full connection info, including changes
-     -i, --info    Verbose output
-     -d, --debug   Debug output
-     -v, --version Show version number
-     -h, --help    Show this help
-     -p, --proxy   Use proxy for network connections (host:port)
+    A SBB/CFF/FFS commandline based timetable client.
+
+    positional arguments:
+      request
+
+    optional arguments:
+      --full, -f            Show full connection info, including changes
+      --info, -i            Verbose output
+      --debug, -d           Debug output
+      --help, -h            Show this help
+      --version, -v         Show version number
+      --proxy PROXY, -p PROXY
+			    Use proxy for network connections (host:port)
 
     Arguments:
      You can use natural language arguments using the following
@@ -58,8 +65,9 @@ Usage
 
     Examples:
      fahrplan from thun to burgdorf
-     fahrplan via neuchâtel à lausanne de zurich, helvetiaplatz départ 15:35
-     fahrplan von bern nach basel an um mitternacht
+     fahrplan via bern nach basel von zürich, helvetiaplatz ab 15:35
+     fahrplan de lausanne à vevey arrivée minuit
+     fahrplan -p proxy.mydomain.ch:8080 de lausanne à vevey arrivée minuit
 
 .. image:: https://raw.github.com/dbrgn/fahrplan/master/screenshot.png
     :alt: Screenshot
