@@ -205,7 +205,7 @@ def _parse_time(timestring, keywords):
 
     # Parse regular time strings
     # regular_time_match = re.search(r'([0-2]?[0-9])[:\-\. ]([0-9]{2})', timestring)
-    regular_time_match = re.search(r'(\d{2}):(\d{2})', timestring)
+    regular_time_match = re.search(r'(?<!/)(\d{2})(?::*)(\d{2})', timestring)
     if regular_time_match:
         return ':'.join(regular_time_match.groups())
     timestring = timestring.lower()
