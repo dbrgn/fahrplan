@@ -1,19 +1,18 @@
 language: python
 env:
-    - TOXENV=py26-r1
-    - TOXENV=py26-r2
-    - TOXENV=py27-r1
-    - TOXENV=py27-r2
+    - TOXENV=py26
+    - TOXENV=py27
+    - TOXENV=py34
     - TOXENV=cov
 matrix:
     allow_failures:
         - env: TOXENV=cov
 install:
-    - pip install --quiet --use-mirrors tox
+    - pip install tox
 script:
     - tox
 after_script:
     - if [ $TOXENV == "cov" ]; then
-      pip install --quiet --use-mirrors coveralls;
+      pip install --quiet;
       coveralls;
       fi
