@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 import six
-from .tableprinter import Tableprinter
 from texttable.texttable import Texttable
 # Output formats
 class Formats(object):
     SIMPLE = 0
     FULL = 1
-
-#Get table row for connection
+    
 def _getConnectionRow(i,c):
+    """
+    Get table row for connection.
+    """
     sections = c["sections"]
     firstClass = True
     #Create row
@@ -28,8 +29,10 @@ def _getConnectionRow(i,c):
         else:
             row.append("\n \n".join(["\n".join(p(s)) for s in sections]))
     return row
-#Display connections
 def displayConnections(connections, output_format):
+    """
+    Display connections in the given output format.
+    """
     table = Texttable(max_width=0)
     #Alignments
     table.set_cols_valign(["m","t","t","t","t","t","m","t","t"])
@@ -41,8 +44,8 @@ def displayConnections(connections, output_format):
         table.add_row(_getConnectionRow(i,c))
     #Display
     print(table.draw())
-
 # Old display method:
+# from .tableprinter import Tableprinter
 # def displayConnections(connections, output_format):
 #     # Define columns
 #     cols = (

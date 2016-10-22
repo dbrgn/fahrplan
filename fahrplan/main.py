@@ -36,13 +36,10 @@ __version__ = meta.version
 # Base configuration
 ENCODING = sys.stdout.encoding or 'utf-8'
 
-
-
 # Helper function to print directly to sys.stderr
 perror = partial(print, file=sys.stderr)
 
 def main():
-
     output_format = Formats.SIMPLE
     proxy_host = None
 

@@ -44,9 +44,9 @@ class TestBasicArgumentHandling(unittest.TestCase):
         for arg in args:
             r = envoy.run('{0} {1}'.format(BASE_COMMAND, arg))
             self.assertTrue(meta.description in r.std_out)
-            self.assertTrue('Usage:' in r.std_out)
-            self.assertTrue('Options:' in r.std_out)
-            self.assertTrue('Arguments:' in r.std_out)
+            self.assertTrue('usage:' in r.std_out)
+            self.assertTrue('optional arguments:' in r.std_out)
+            self.assertTrue('positional arguments:' in r.std_out)
             self.assertTrue('Examples:' in r.std_out)
 
 
@@ -164,29 +164,24 @@ class TestBasicQuery(unittest.TestCase):
         self.assertEqual(0, self.r.status_code)
 
     def testRowCount(self):
-        """A normal output table should have 14 rows."""
-        self.assertEqual(15, len(self.rows))
+        """A normal output table should have 16 rows."""
+        self.assertEqual(16, len(self.rows))
 
     def testHeadline(self):
         """Test the headline items."""
-        headline_items = ['Station', 'Platform', 'Date', 'Time', 'Duration', 'Chg.', 'Travel with', 'Occupancy']
+        headline_items = ['Station', 'Platform', 'Date', 'Time', 'Duration', 'Chg.', 'With', 'Occupancy']
         for item in headline_items:
-            self.assertIn(item, self.rows[0])
+            self.assertIn(item, self.rows[1])
 
-    def testEnumeration(self):
-        """Each row should be enumerated."""
-        firstcol = [row[0] for row in self.rows[:-1]]
-        self.assertEqual(list('#-1 -2 -3 -4 -'), firstcol)
+    # def testEnumeration(self):
+    #     """Each row should be enumerated."""
+    #     firstcol = [row[0] for row in self.rows[:-1]]
+    #     self.assertEqual(list('#-1 -2 -3 -4 -'), firstcol)
 
     def testStationNames(self):
         """Station names should be "Basel SBB" and "Zürich HB"."""
-        if six.PY3:  # quick and dirty
-            self.assertTrue(self.rows[2].startswith('1  | Basel SBB'))
-            self.assertTrue(self.rows[3].startswith('   | Zürich HB'))
-        else:
-            self.assertTrue(self.rows[2].startswith('1  | Basel SBB'))
-            self.assertTrue(self.rows[3].startswith('   | Z\xc3\xbcrich HB'))
-
+        self.assertTrue("Basel SBB" in self.rows[3])
+        self.assertTrue("Zürich HB" in self.rows[4])
 
 class TestLanguages(unittest.TestCase):
 
@@ -208,31 +203,31 @@ class TestLanguages(unittest.TestCase):
         self.assertTrue(stdout_values[1:] == stdout_values[:-1])
 
 
-class TestTablePrinter(unittest.TestCase):
+# class TestTablePrinter(unittest.TestCase):
 
-    def setUp(self):
-        self.output = StringIO()
-        self.stdout = sys.stdout
-        sys.stdout = self.output
+#     def setUp(self):
+#         self.output = StringIO()
+#         self.stdout = sys.stdout
+#         sys.stdout = self.output
 
-    def tearDown(self):
-        self.output.close()
-        sys.stdout = self.stdout
+#     def tearDown(self):
+#         self.output.close()
+#         sys.stdout = self.stdout
 
-    def testSeparator(self):
-        printer = Tableprinter((3, 4, 5), '  ')
-        printer.print_separator('*')
-        self.assertEqual('******************\n', self.output.getvalue())
+#     def testSeparator(self):
+#         printer = Tableprinter((3, 4, 5), '  ')
+#         printer.print_separator('*')
+#         self.assertEqual('******************\n', self.output.getvalue())
 
-    def testPartialSeparator(self):
-        printer = Tableprinter((2, 2, 3, 2), '+|+')
-        printer.print_separator(cols=[1, 2])
-        self.assertEqual('  +|+--+|+---+|+  +|+\n', self.output.getvalue())
+#     def testPartialSeparator(self):
+#         printer = Tableprinter((2, 2, 3, 2), '+|+')
+#         printer.print_separator(cols=[1, 2])
+#         self.assertEqual('  +|+--+|+---+|+  +|+\n', self.output.getvalue())
 
-    def testLine(self):
-        printer = Tableprinter((4, 5, 6), '|')
-        printer.print_line(('Eggs', 'Bacon', 'Spam'))
-        self.assertEqual('Eggs|Bacon|Spam  |\n', self.output.getvalue())
+#     def testLine(self):
+#         printer = Tableprinter((4, 5, 6), '|')
+#         printer.print_line(('Eggs', 'Bacon', 'Spam'))
+#         self.assertEqual('Eggs|Bacon|Spam  |\n', self.output.getvalue())
 
 
 class RegressionTests(unittest.TestCase):
