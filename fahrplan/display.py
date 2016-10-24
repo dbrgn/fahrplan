@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #try:
-from texttable.texttable import Texttable
+from texttable import Texttable
 # except:
 #     from texttable.texttable import Texttable
 
