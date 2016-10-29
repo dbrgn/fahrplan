@@ -261,8 +261,8 @@ class RegressionTests(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    tokens = 'de Zürich à Locarno via Genève départ 1830 arrivée 19:00'.split()
-    data, language = parser._process_tokens(tokens, sloppy_validation=True)
-    print(data)
-    exit()
-    #unittest.main()
+    #tokens = 'de Zürich à Locarno via Genève départ 1830 arrivée 19:00'.split()
+    #data, language = parser._process_tokens(tokens, sloppy_validation=True)
+    #print(data)
+    #exit()
+    unittest.main()
