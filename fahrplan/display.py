@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-#try:
+# try:
 from texttable import Texttable
 # except:
 #     from texttable.texttable import Texttable
+
 
 # Output formats
 class Formats(object):
