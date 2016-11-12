@@ -59,10 +59,10 @@ def _parse_section(con_section, connection):
     section = {}
     section['station_from'] = departure['station']['name']
     section['station_to'] = arrival['station']['name']
-    section['travelwith'] = journey["name"]
+    section['travelwith'] = journey["name"] if journey is not None else ""
     section['departure'] = dateutil.parser.parse(departure['departure'])
     section['arrival'] = dateutil.parser.parse(arrival['arrival'])
-    section['platform_from'] = 'Walk' if walk else departure['platform']
+    section['platform_from'] = "" if walk else departure['platform']
     section['platform_to'] = arrival['platform']
     if walk:
         section['occupancy1st'] = ''
