@@ -26,7 +26,7 @@ import six
 
 from . import meta
 from .parser import parse_input
-from .API import getConnections
+from .api import get_connections
 from .display import Formats, connectionsTable
 from .helpers import perror
 
@@ -65,10 +65,12 @@ def main():
     parser.add_argument("--proxy", "-p", help="Use proxy for network connections (host:port)")
     parser.add_argument("request", nargs=argparse.REMAINDER)
     options = parser.parse_args()
+
     # Version
     if options.version:
         print('{meta.title} {meta.version}'.format(meta=meta))
         sys.exit(0)
+
     # No request or help
     if len(options.request) == 0 or options.help:
         if six.PY2:
@@ -76,6 +78,7 @@ def main():
         else:
             parser.print_help()
         sys.exit(0)
+
     # Options
     if options.full:
         output_format = Formats.FULL
@@ -83,6 +86,7 @@ def main():
         logging.basicConfig(level=logging.DEBUG)
     if options.proxy is not None:
         proxy_host = options.proxy
+
     # Parse user request
     if six.PY2:
         options.request = [o.decode(ENCODING) for o in options.request]
@@ -91,8 +95,9 @@ def main():
     except ValueError as e:
         perror('Error:', e)
         sys.exit(1)
+
     # 2. API request
-    data = getConnections(args, (output_format == Formats.FULL), proxy_host)
+    data = get_connections(args, (output_format == Formats.FULL), proxy_host)
     connections = data["connections"]
 
     if not connections:

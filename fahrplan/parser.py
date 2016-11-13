@@ -158,7 +158,7 @@ def _parse_date(datestring, keywords):
             if days_shift <= 0:
                 days_shift += 7
     # Shifts
-    if days_shift == None:
+    if days_shift is None:
         for pattern in keywords["days"]:
             days_re = re.search(pattern, datestring)
             if days_re:
@@ -166,8 +166,10 @@ def _parse_date(datestring, keywords):
                     days_shift = int(days_re.group(1))
                 except:
                     pass
-    if days_shift != None:
+
+    if days_shift is not None:
         return datetime.now() + timedelta(days=days_shift)
+
     # Regular date strings
     for dateformat in [[r"(\d{2}/\d{2}/\d{4})", "%d/%m/%Y"], [r"(\d{2}/\d{2})", "%d/%m"]]:
         days_re = re.search(dateformat[0], datestring)
@@ -179,8 +181,10 @@ def _parse_date(datestring, keywords):
             if date.year == 1900:
                 date = date.replace(year=datetime.now().year)
             break
-    if date != None:
+
+    if date is not None:
         return date.strftime("%Y/%m/%d")
+
     return None
 
 
@@ -261,19 +265,3 @@ def parse_input(tokens):
 
     logging.debug('Data: ' + repr(data))
     return data, language
-    """
-    transport.opendata.ch request params:
-    x from
-    x to
-    x via
-    - date
-    x time
-    x isArrivalTime
-    - transportations
-    - limit
-    - page
-    - direct
-    - sleeper
-    - couchette
-    - bike
-    """

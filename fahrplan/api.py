@@ -18,7 +18,7 @@ occupancies = {
 API_URL = 'http://transport.opendata.ch/v1'
 
 
-def _APIRequest(action, params, proxy=None):
+def _api_request(action, params, proxy=None):
     """
     Perform an API request on transport.opendata.ch
     """
@@ -32,12 +32,14 @@ def _APIRequest(action, params, proxy=None):
     except requests.exceptions.ConnectionError:
         perror('Error: Could not reach network.')
         sys.exit(1)
+
     # Check response status
     logging.debug('Response status: {0!r}'.format(response.status_code))
     if not response.ok:
         verbose_status = requests.status_codes._codes[response.status_code][0]
         perror('Server Error: HTTP {} ({})'.format(response.status_code, verbose_status))
         sys.exit(1)
+
     # Convert response to json
     try:
         return json.loads(response.text)
@@ -100,6 +102,7 @@ def _parse_connection(connection, include_sections=False):
     data['travelwith'] = ', '.join(connection['products'])
     data['occupancy1st'] = occupancies.get(connection['capacity1st'], '')
     data['occupancy2nd'] = occupancies.get(connection['capacity2nd'], '')
+
     # Sections
     con_sections = sorted(connection['sections'], key=keyfunc)
     data['sections'] = []
@@ -120,16 +123,18 @@ def _parse_connection(connection, include_sections=False):
         for p in ["occupancy2nd", "occupancy1st", "travelwith", "change_count"]:
             section[p] = data[p]
         data['sections'] = [section]
+
     # Walk
     if walk:
         data['travelwith'] += ', Walk'
+
     return data
 
 
-def getConnections(request, include_sections=False, proxy=None):
+def get_connections(request, include_sections=False, proxy=None):
     """
     Get the connections of a request
     """
-    data = _APIRequest("connections", request, proxy)
+    data = _api_request("connections", request, proxy)
     data["connections"] = [_parse_connection(c, include_sections) for c in data["connections"]]
     return data
