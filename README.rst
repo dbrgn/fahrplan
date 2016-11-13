@@ -1,17 +1,17 @@
 fahrplan
 ========
 
-.. image:: https://secure.travis-ci.org/dbrgn/fahrplan.png?branch=master
+.. image:: https://img.shields.io/travis/dbrgn/fahrplan/master.svg
     :alt: Build status
     :target: http://travis-ci.org/dbrgn/fahrplan
 
-.. image:: https://coveralls.io/repos/dbrgn/fahrplan/badge.png
+.. image:: https://img.shields.io/coveralls/dbrgn/fahrplan/master.svg
     :alt: Coverage status
     :target: https://coveralls.io/r/dbrgn/fahrplan
 
-.. image:: https://pypip.in/d/fahrplan/badge.png
+.. image::  https://img.shields.io/pypi/dm/fahrplan.svg
     :alt: PyPI download stats
-    :target: https://crate.io/packages/fahrplan
+    :target: https://pypi.python.org/pypi/fahrplan
 
 Goal: Simple access to the SBB/CFF/FFS timetable service from the commandline with human
 readable argument parsing.
