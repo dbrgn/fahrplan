@@ -1,3 +1,4 @@
-envoy
 unittest2
-nose-cov
+nose2
+cov-core
+

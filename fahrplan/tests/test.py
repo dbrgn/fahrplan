@@ -2,14 +2,10 @@
 from __future__ import print_function, division, absolute_import, unicode_literals
 
 import sys
-import datetime
-try:
-    from StringIO import StringIO
-except ImportError:
-    from io import BytesIO as StringIO
+from datetime import datetime, timedelta
 
-import six
-import envoy
+#import envoy
+from subprocess import Popen, PIPE
 if sys.version_info[0] == 2 and sys.version_info[1] < 7:
     import unittest2 as unittest
 else:
@@ -17,7 +13,7 @@ else:
 
 from .. import meta
 from .. import parser
-from ..tableprinter import Tableprinter
+#from ..tableprinter import Tableprinter
 
 
 BASE_COMMAND = 'python -m fahrplan.main'
@@ -26,40 +22,43 @@ try:
 except AttributeError:
     ENCODING = 'utf-8'
 
+#Run command
+class CommandOutput(object):
+    def __init__(self, stdout, stderr, code):
+        self.std_err = stderr
+        self.std_out = stdout
+        self.status_code = code
+def runCommand(command):
+    p = Popen(command, stdout=PIPE, stderr=PIPE, shell=True)
+    stdout, stderr = p.communicate()
+    return CommandOutput(stdout.decode(ENCODING), stderr.decode(ENCODING), p.returncode)
 
 class TestBasicArgumentHandling(unittest.TestCase):
 
-    def testTooFewArguments(self):
-        args = ['', '-i', '-d', '-i -d']
-        for arg in args:
-            r = envoy.run(b'{0} {1}'.format(BASE_COMMAND, arg))
-            self.assertEqual('Not enough arguments.\n', r.std_err)
-
     def testRequiredArgumentsMissing(self):
-        r = envoy.run(b'{0} von bern'.format(BASE_COMMAND))
+        r = runCommand('{0} von bern'.format(BASE_COMMAND))
         self.assertEqual('Error: "from" and "to" arguments must be present!\n', r.std_err)
 
     def testVersionInfo(self):
         args = ['-v', '--version', '-d -i -v']
         for arg in args:
-            r = envoy.run(b'{0} {1}'.format(BASE_COMMAND, arg))
+            r = runCommand('{0} {1}'.format(BASE_COMMAND, arg))
             self.assertEqual('%s %s\n' % (meta.title, meta.version), r.std_out)
 
     def testHelp(self):
         args = ['-h', '--help', '-d -i --help']
         for arg in args:
-            r = envoy.run(b'{0} {1}'.format(BASE_COMMAND, arg))
-            title = '{meta.title}: {meta.description}'.format(meta=meta).encode(ENCODING)
-            self.assertTrue(title in r.std_out)
-            self.assertTrue(b'Usage:' in r.std_out)
-            self.assertTrue(b'Options:' in r.std_out)
-            self.assertTrue(b'Arguments:' in r.std_out)
-            self.assertTrue(b'Examples:' in r.std_out)
+            r = runCommand('{0} {1}'.format(BASE_COMMAND, arg))
+            self.assertTrue(meta.description in r.std_out)
+            self.assertTrue('usage:' in r.std_out)
+            self.assertTrue('optional arguments:' in r.std_out)
+            self.assertTrue('positional arguments:' in r.std_out)
+            self.assertTrue('Examples:' in r.std_out)
 
 
 class TestInputParsing(unittest.TestCase):
 
-    valid_expected_result = {'arrival': '19:00', 'departure': '18:00', 'from': 'Zürich', 'to': 'Locarno', 'via': 'Genève'}
+    valid_expected_result = {'arrival': '19:00', 'departure': '18:30', 'from': 'Zürich', 'to': 'Locarno', 'via': 'Genève'}
 
     def testEmptyArguments(self):
         tokens = []
@@ -80,19 +79,19 @@ class TestInputParsing(unittest.TestCase):
         self.assertIsNone(language)
 
     def testValidArgumentsEn(self):
-        tokens = 'from Zürich to Locarno via Genève departure 18:00 arrival 19:00'.split()
+        tokens = 'from Zürich to Locarno via Genève departure 18:30 arrival 19:00'.split()
         data, language = parser._process_tokens(tokens, sloppy_validation=True)
         self.assertEqual(self.valid_expected_result, data)
         self.assertEqual('en', language)
 
     def testValidArgumentsDe(self):
-        tokens = 'von Zürich nach Locarno via Genève ab 18:00 an 19:00'.split()
+        tokens = 'von Zürich nach Locarno via Genève ab 18:30 an 19:00'.split()
         data, language = parser._process_tokens(tokens, sloppy_validation=True)
         self.assertEqual(self.valid_expected_result, data)
         self.assertEqual('de', language)
 
-    def testValidArgumentsFr(self):
-        tokens = 'de Zürich à Locarno via Genève départ 18:00 arrivée 19:00'.split()
+    def testValidArgumentsFr(self):        
+        tokens = 'de Zürich à Locarno via Genève départ 18:30 arrivée 19:00'.split()
         data, language = parser._process_tokens(tokens, sloppy_validation=True)
         self.assertEqual(self.valid_expected_result, data)
         self.assertEqual('fr', language)
@@ -102,8 +101,8 @@ class TestInputParsing(unittest.TestCase):
         self.assertRaises(ValueError, parser.parse_input, tokens)
 
     def testBasicDepartureTime(self):
-        tokens = 'von basel nach bern ab 18:00'.split()
-        expected = {'from': 'basel', 'time': '18:00', 'to': 'bern'}
+        tokens = 'von basel nach bern ab 1945'.split()
+        expected = {'from': 'basel', 'time': '19:45', 'to': 'bern'}
         self.assertEqual(expected, parser.parse_input(tokens)[0])
 
     def testBasicArrivalTime(self):
@@ -112,7 +111,7 @@ class TestInputParsing(unittest.TestCase):
         self.assertEqual(expected, parser.parse_input(tokens)[0])
 
     def testImmediateTimes(self):
-        now = datetime.datetime.now().strftime('%H:%M')
+        now = datetime.now().strftime('%H:%M')
         queries = [
             'von basel nach bern ab jetzt'.split(),
             'von basel nach bern ab sofort'.split(),
@@ -155,45 +154,51 @@ class TestInputParsing(unittest.TestCase):
         for tokens in queries:
             data, _ = parser.parse_input(tokens)
             self.assertEqual('12:00', data['time'])
-
+    def testDates(self):
+        year = datetime.now().year
+        queries = [
+            'von basel nach bern ab 22/10/2016 13:00'.split(),
+            'von basel nach bern ab um 22/10 13:00'.split(),
+            'from basel to bern departure 22/10 13:00'.split(),
+            'from basel to bern departure 22/10 13:00'.split(),
+        ]
+        for tokens in queries:
+            data, _ = parser.parse_input(tokens)
+            self.assertEqual('13:00', data['time'])
+            self.assertEqual('{}/10/22'.format(year), data['date'])
 
 class TestBasicQuery(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
         """Setup method that is only run once."""
-        cmd = '{0} von basel nach zürich ab 07:00'.format(BASE_COMMAND)
-        cls.r = envoy.run(cmd.encode(ENCODING))
-        cls.rows = cls.r.std_out.split(b'\n')
+        cmd = '{0} von basel nach zürich ab 07:00'.format(BASE_COMMAND)        
+        cls.r = runCommand(cmd)
+        cls.rows = cls.r.std_out.split('\n')
 
     def returnStatus(self):
         """The command should return the status code 0."""
         self.assertEqual(0, self.r.status_code)
 
     def testRowCount(self):
-        """A normal output table should have 14 rows."""
-        self.assertEqual(15, len(self.rows))
+        """A normal output table should have 16 rows."""
+        self.assertEqual(16, len(self.rows))
 
     def testHeadline(self):
         """Test the headline items."""
-        headline_items = ['Station', 'Platform', 'Date', 'Time', 'Duration', 'Chg.', 'Travel with', 'Occupancy']
+        headline_items = ['Station', 'Platform', 'Date', 'Time', 'Duration', 'Chg.', 'With', 'Occupancy']
         for item in headline_items:
-            self.assertIn(item, self.rows[0])
+            self.assertIn(item, self.rows[1])
 
-    def testEnumeration(self):
-        """Each row should be enumerated."""
-        firstcol = [row[0] for row in self.rows[:-1]]
-        self.assertEqual(list('#-1 -2 -3 -4 -'), firstcol)
+    # def testEnumeration(self):
+    #     """Each row should be enumerated."""
+    #     firstcol = [row[0] for row in self.rows[:-1]]
+    #     self.assertEqual(list('#-1 -2 -3 -4 -'), firstcol)
 
     def testStationNames(self):
         """Station names should be "Basel SBB" and "Zürich HB"."""
-        if six.PY3:  # quick and dirty
-            self.assertTrue(self.rows[2].decode().startswith('1  | Basel SBB'))
-            self.assertTrue(self.rows[3].decode().startswith('   | Zürich HB'))
-        else:
-            self.assertTrue(self.rows[2].startswith(b'1  | Basel SBB'))
-            self.assertTrue(self.rows[3].startswith(b'   | Z\xc3\xbcrich HB'))
-
+        self.assertTrue("Basel SBB" in self.rows[3])
+        self.assertTrue("Zürich HB" in self.rows[4])
 
 class TestLanguages(unittest.TestCase):
 
@@ -206,7 +211,7 @@ class TestLanguages(unittest.TestCase):
         args = ['von bern nach basel via zürich ab 15:00',
                 'from bern to basel via zürich departure 15:00',
                 'de bern à basel via zürich départ 15:00']
-        jobs = [envoy.run('{0} {1}'.format(BASE_COMMAND, arg).encode(ENCODING)) for arg in args]
+        jobs = [runCommand('{0} {1}'.format(BASE_COMMAND, arg)) for arg in args]
 
         statuscodes = [job.status_code for job in jobs]
         self.assertEqual([0, 0, 0], statuscodes)
@@ -215,31 +220,26 @@ class TestLanguages(unittest.TestCase):
         self.assertTrue(stdout_values[1:] == stdout_values[:-1])
 
 
-class TestTablePrinter(unittest.TestCase):
-
-    def setUp(self):
-        self.output = StringIO()
-        self.stdout = sys.stdout
-        sys.stdout = self.output
-
-    def tearDown(self):
-        self.output.close()
-        sys.stdout = self.stdout
-
-    def testSeparator(self):
-        printer = Tableprinter((3, 4, 5), '  ')
-        printer.print_separator('*')
-        self.assertEqual('******************\n', self.output.getvalue())
-
-    def testPartialSeparator(self):
-        printer = Tableprinter((2, 2, 3, 2), '+|+')
-        printer.print_separator(cols=[1, 2])
-        self.assertEqual('  +|+--+|+---+|+  +|+\n', self.output.getvalue())
-
-    def testLine(self):
-        printer = Tableprinter((4, 5, 6), '|')
-        printer.print_line(('Eggs', 'Bacon', 'Spam'))
-        self.assertEqual('Eggs|Bacon|Spam  |\n', self.output.getvalue())
+# class TestTablePrinter(unittest.TestCase):
+#     def setUp(self):
+#         self.output = StringIO()
+#         self.stdout = sys.stdout
+#         sys.stdout = self.output
+#     def tearDown(self):
+#         self.output.close()
+#         sys.stdout = self.stdout
+#     def testSeparator(self):
+#         printer = Tableprinter((3, 4, 5), '  ')
+#         printer.print_separator('*')
+#         self.assertEqual('******************\n', self.output.getvalue())
+#     def testPartialSeparator(self):
+#         printer = Tableprinter((2, 2, 3, 2), '+|+')
+#         printer.print_separator(cols=[1, 2])
+#         self.assertEqual('  +|+--+|+---+|+  +|+\n', self.output.getvalue())
+#     def testLine(self):
+#         printer = Tableprinter((4, 5, 6), '|')
+#         printer.print_line(('Eggs', 'Bacon', 'Spam'))
+#         self.assertEqual('Eggs|Bacon|Spam  |\n', self.output.getvalue())
 
 
 class RegressionTests(unittest.TestCase):
@@ -248,7 +248,7 @@ class RegressionTests(unittest.TestCase):
         """Github issue #11:
         Don't allow both departure and arrival time."""
         args = 'von bern nach basel ab 15:00 an 16:00'
-        query = envoy.run(b'{0} {1}'.format(BASE_COMMAND, args))
+        query = runCommand('{0} {1}'.format(BASE_COMMAND, args))
         self.assertEqual('Error: You can\'t specify both departure *and* arrival time.\n',
                 query.std_err)
 
@@ -256,9 +256,13 @@ class RegressionTests(unittest.TestCase):
         """Github issue #13:
         Station not found: ValueError: max() arg is an empty sequence."""
         args = 'von zuerich manegg nach nach stadelhofen'
-        query = envoy.run(b'{0} {1}'.format(BASE_COMMAND, args))
+        query = runCommand('{0} {1}'.format(BASE_COMMAND, args))
         self.assertEqual(0, query.status_code, 'Program terminated with statuscode != 0')
 
 
 if __name__ == '__main__':
+    #tokens = 'de Zürich à Locarno via Genève départ 1830 arrivée 19:00'.split()
+    #data, language = parser._process_tokens(tokens, sloppy_validation=True)
+    #print(data)
+    #exit()
     unittest.main()

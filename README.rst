@@ -13,39 +13,48 @@ fahrplan
     :alt: PyPI download stats
     :target: https://crate.io/packages/fahrplan
 
-Goal: Simple access to the sbb timetable service from the commandline with human
+Goal: Simple access to the SBB/CFF/FFS timetable service from the commandline with human
 readable argument parsing.
 
 Relies on the public transport API by opendata.ch: http://transport.opendata.ch/
 
-Fahrplan support both Python 2.6 and 2.7. PyPy should be working (except for the
-tests), but there is no official support until the tests are fixed. Python 3.3
-support is under way.
+Fahrplan supports Python 2.7 and 3.5. PyPy should be working (except for the
+tests), but there is no official support until the tests are fixed.
 
 
 Installing
 ----------
 
-To install current version using pip, issue::
+To install the current version using pip, issue::
 
     $ sudo pip install fahrplan
 
+To install from this repository, clone it and use::
+
+    $ python setup.py fahrplan
 
 Usage
 -----
 
 ``fahrplan --help``::
 
-    Usage:
-     fahrplan [options] arguments
+    usage: fahrplan [--full] [--info] [--debug] [--help] [--version]
+		    [--proxy PROXY]
+		    ...
 
-    Options:
-     -f, --full    Show full connection info, including changes
-     -i, --info    Verbose output
-     -d, --debug   Debug output
-     -v, --version Show version number
-     -h, --help    Show this help
-     -p, --proxy   Use proxy for network connections (host:port)
+    A SBB/CFF/FFS commandline based timetable client.
+
+    positional arguments:
+      request
+
+    optional arguments:
+      --full, -f            Show full connection info, including changes
+      --info, -i            Verbose output
+      --debug, -d           Debug output
+      --help, -h            Show this help
+      --version, -v         Show version number
+      --proxy PROXY, -p PROXY
+			    Use proxy for network connections (host:port)
 
     Arguments:
      You can use natural language arguments using the following
@@ -54,13 +63,16 @@ Usage
      de -- von, nach, via, ab, an
      fr -- de, à, via, départ, arrivée
 
-     You can also use natural time specifications in your language, like "now",
-     "immediately", "noon" or "midnight".
+     You can also use natural time and date specifications in your language, like
+     - "now", "immediately", "at noon", "at midnight",
+     - "tomorrow", "monday", "in 2 days", "22/11".
 
     Examples:
      fahrplan from thun to burgdorf
-     fahrplan via neuchâtel à lausanne de zurich, helvetiaplatz départ 15:35
-     fahrplan von bern nach basel an um mitternacht
+     fahrplan via bern nach basel von zürich, helvetiaplatz ab 15:35
+     fahrplan de lausanne à vevey arrivée minuit
+     fahrplan from Bern to Zurich departure 13:00 monday
+     fahrplan -p proxy.mydomain.ch:8080 de lausanne à vevey arrivée minuit
 
 .. image:: https://raw.github.com/dbrgn/fahrplan/master/screenshot.png
     :alt: Screenshot
@@ -69,15 +81,9 @@ Usage
 Testing
 -------
 
-Prior to testing, you should install the required libraries (preferrably in
-a virtualenv)::
+Testing is done using tox and nosetests.
 
-    $ virtualenv --no-site-packages VIRTUAL
-    $ . VIRTUAL/bin/activate
-    $ pip install -r requirements.txt
-    $ pip install -r requirements-dev.txt
-
-To run the test script::
+To run the test script for Python 2 and 3::
 
     $ ./test.sh
 
