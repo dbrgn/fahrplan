@@ -9,10 +9,6 @@ fahrplan
     :alt: Coverage status
     :target: https://coveralls.io/r/dbrgn/fahrplan
 
-.. image::  https://img.shields.io/pypi/dm/fahrplan.svg
-    :alt: PyPI download stats
-    :target: https://pypi.python.org/pypi/fahrplan
-
 Goal: Simple access to the SBB/CFF/FFS timetable service from the commandline with human
 readable argument parsing.
 
