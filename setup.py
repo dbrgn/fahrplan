@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from setuptools import setup, find_packages
+from setuptools import setup
 from fahrplan import meta
 
 f = open('requirements.txt', 'r')
@@ -28,7 +28,7 @@ setup(name='fahrplan',
           ]
       },
       classifiers=[
-          'Development Status :: 4 - Beta',
+          'Development Status :: 5 - Production/Stable',
           'Environment :: Console',
           'License :: OSI Approved :: GNU General Public License (GPL)',
           'Natural Language :: English',

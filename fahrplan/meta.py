@@ -1,6 +1,6 @@
 """This module contains metadata about the project."""
 title = 'fahrplan'
-version = '0.2.3'
+version = '1.0.0'
 description = 'A SBB/CFF/FFS commandline based timetable client.'
 author = 'Danilo Bargen and contributors'
 author_email = 'gezuru@gmail.com'

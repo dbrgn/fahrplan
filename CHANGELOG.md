@@ -13,12 +13,17 @@ Possible log types:
 
 ## [Unreleased]
 
+ - ...
+
+## [1.0.0] - 2017-09-10
+
  - [added] Support for HTTP proxies (#21)
- - [added] Display train numbers
+ - [added] Display train numbers (#22)
  - [added] Date parsing (#10) and support of time without columns (#17)
  - [changed] Improve display by using texttable
  - [changed] Improve code modularity, use argparse for argument parsing
  - [fixed] Python 2 and 3 bugfixes. Tests using nose2. Removed dependency on envoy.
+ - [fixed] Handle connections without platform (#23)
 
 ## [0.2.3] - 2014-09-18
 
@@ -41,7 +46,8 @@ Possible log types:
  - Initial Python 3 compatible release.
    No changelog information before this.
 
-[Unreleased]: https://github.com/dbrgn/fahrplan/compare/v0.2.3...HEAD
+[Unreleased]: https://github.com/dbrgn/fahrplan/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/dbrgn/fahrplan/compare/v0.2.3...v1.0.0
 [0.2.3]: https://github.com/dbrgn/fahrplan/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/dbrgn/fahrplan/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/dbrgn/fahrplan/compare/v0.2.0...v0.2.1
