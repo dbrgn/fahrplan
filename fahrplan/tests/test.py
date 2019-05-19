@@ -166,7 +166,7 @@ class TestInputParsing(unittest.TestCase):
     def testDates(self):
         year = datetime.now().year
         queries = [
-            'von basel nach bern ab 22/10/2016 13:00'.split(),
+            'von basel nach bern ab 22/10/{} 13:00'.format(year).split(),
             'von basel nach bern ab um 22/10 13:00'.split(),
             'from basel to bern departure 22/10 13:00'.split(),
             'from basel to bern departure 22/10 13:00'.split(),
