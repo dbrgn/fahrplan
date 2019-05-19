@@ -1,7 +1,7 @@
 language: python
 env:
     - TOXENV=py27
-    - TOXENV=py35
+    - TOXENV=py36
     - TOXENV=cov
 matrix:
     allow_failures:
