@@ -61,7 +61,7 @@ def _process_tokens(tokens, sloppy_validation=False):
     Raises:
         ValueError: If "from" or "to" arguments are missing or if both
             departure *and* arrival time are specified (as long as
-            sloppy_validatoin is disabled).
+            sloppy_validation is disabled).
 
     """
     if len(tokens) < 2:
