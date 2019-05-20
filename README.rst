@@ -2,7 +2,7 @@ fahrplan
 ========
 
 
-.. image:: https://img.shields.io/circleci/build/github/dbrgn/fahrplan/master.svg
+.. image:: https://circleci.com/gh/dbrgn/fahrplan.svg?style=shield&circle-token=:circle-token
     :alt: Build status
     :target: https://circleci.com/gh/dbrgn/fahrplan/
 
