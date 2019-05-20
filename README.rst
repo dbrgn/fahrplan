@@ -1,21 +1,17 @@
 fahrplan
 ========
 
-.. image:: https://img.shields.io/travis/dbrgn/fahrplan/master.svg
-    :alt: Build status
-    :target: http://travis-ci.org/dbrgn/fahrplan
 
-.. image:: https://img.shields.io/coveralls/dbrgn/fahrplan/master.svg
-    :alt: Coverage status
-    :target: https://coveralls.io/r/dbrgn/fahrplan
+.. image:: https://img.shields.io/circleci/build/github/dbrgn/fahrplan/master.svg
+    :alt: Build status
+    :target: https://circleci.com/gh/dbrgn/fahrplan/
 
 Goal: Simple access to the SBB/CFF/FFS timetable service from the commandline with human
 readable argument parsing.
 
 Relies on the public transport API by opendata.ch: http://transport.opendata.ch/
 
-Fahrplan supports Python 2.7 and 3.5. PyPy should be working (except for the
-tests), but there is no official support until the tests are fixed.
+Fahrplan supports Python 3.5+.
 
 
 Installing
@@ -79,7 +75,7 @@ Testing
 
 Testing is done using tox and nosetests.
 
-To run the test script for Python 2 and 3::
+To run the tests on supported Python versions::
 
     $ ./test.sh
 
