@@ -1,7 +1,8 @@
+dist: xenial
 language: python
 env:
-    - TOXENV=py27
-    - TOXENV=py34
+    - TOXENV=py35
+    - TOXENV=py37
     - TOXENV=cov
 matrix:
     allow_failures:
