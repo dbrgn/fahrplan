@@ -3,7 +3,6 @@ import requests
 import logging
 import json
 import dateutil.parser
-import six
 import sys
 from .helpers import perror
 
@@ -98,7 +97,7 @@ def _parse_connection(connection, include_sections=False):
 
     def keyfunc(s):
         return s['departure']['departure']
-    data['change_count'] = six.text_type(connection['transfers'])
+    data['change_count'] = str(connection['transfers'])
     data['travelwith'] = ', '.join(connection['products'])
     data['occupancy1st'] = occupancies.get(connection['capacity1st'], '')
     data['occupancy2nd'] = occupancies.get(connection['capacity2nd'], '')

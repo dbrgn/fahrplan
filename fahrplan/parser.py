@@ -1,11 +1,7 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function, division, absolute_import, unicode_literals
-
 from datetime import datetime, timedelta
 import re
 import logging
-
-import six
 
 keywords = {
     'de': {
@@ -81,7 +77,7 @@ def _process_tokens(tokens, sloppy_validation=False):
     logging.info('Detected [%s] input' % language)
 
     # Keywords mapping
-    keywords = dict((v, k) for k, v in six.iteritems(keyword_dicts[language]))
+    keywords = dict((v, k) for k, v in keyword_dicts[language].items())
     logging.debug('Using keywords: ' + ', '.join(keywords.keys()))
 
     # Prepare variables
