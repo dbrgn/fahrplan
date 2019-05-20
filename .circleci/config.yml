@@ -37,6 +37,20 @@ jobs:
     environment:
       TOXENV: py38
 
+  test-pypy3.5:
+    docker:
+      - image: pypy:3.5
+    steps: *test-steps
+    environment:
+      TOXENV: pypy35
+
+  test-pypy3.6:
+    docker:
+      - image: pypy:3.6
+    steps: *test-steps
+    environment:
+      TOXENV: pypy36
+
 workflows:
   version: 2
 
@@ -47,6 +61,8 @@ workflows:
       - test-3.6
       - test-3.7
       - test-3.8
+      - test-pypy3.5
+      - test-pypy3.6
 
   # Build master every week on Monday at 04:00 am
   weekly:
@@ -61,4 +77,3 @@ workflows:
       - test-3.5
       - test-3.6
       - test-3.7
-      - test-3.8
