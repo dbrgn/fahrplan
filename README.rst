@@ -1,13 +1,10 @@
 fahrplan
 ========
 
-.. image:: https://img.shields.io/travis/dbrgn/fahrplan/master.svg
-    :alt: Build status
-    :target: http://travis-ci.org/dbrgn/fahrplan
 
-.. image:: https://img.shields.io/coveralls/dbrgn/fahrplan/master.svg
-    :alt: Coverage status
-    :target: https://coveralls.io/r/dbrgn/fahrplan
+.. image:: https://img.shields.io/circleci/build/github/dbrgn/fahrplan/master.svg
+    :alt: Build status
+    :target: https://circleci.com/gh/dbrgn/fahrplan/
 
 Goal: Simple access to the SBB/CFF/FFS timetable service from the commandline with human
 readable argument parsing.
