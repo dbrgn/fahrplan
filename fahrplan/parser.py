@@ -99,6 +99,10 @@ def _process_tokens(tokens, sloppy_validation=False):
         elif not stack:
             continue
         stack.append(token)
+
+    if not stack:
+        return {}, None
+
     process_stack()
 
     # Validate data

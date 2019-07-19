@@ -86,6 +86,12 @@ class TestInputParsing(unittest.TestCase):
         self.assertEqual({}, data)
         self.assertIsNone(language)
 
+    def testTwoInvalidArguments(self):
+        tokens = 'foo bar'.split()
+        data, language = parser.parse_input(tokens)
+        self.assertEqual({}, data)
+        self.assertIsNone(language)
+
     def testValidArgumentsEn(self):
         tokens = 'from Zürich to Locarno via Genève departure 18:30 arrival 19:00'.split()
         data, language = parser._process_tokens(tokens, sloppy_validation=True)
