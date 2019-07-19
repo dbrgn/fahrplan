@@ -86,12 +86,6 @@ class TestInputParsing(unittest.TestCase):
         self.assertEqual({}, data)
         self.assertIsNone(language)
 
-    def testTwoInvalidArguments(self):
-        tokens = 'foo bar'.split()
-        data, language = parser.parse_input(tokens)
-        self.assertEqual({}, data)
-        self.assertIsNone(language)
-
     def testValidArgumentsEn(self):
         tokens = 'from Zürich to Locarno via Genève departure 18:30 arrival 19:00'.split()
         data, language = parser._process_tokens(tokens, sloppy_validation=True)
@@ -109,6 +103,12 @@ class TestInputParsing(unittest.TestCase):
         data, language = parser._process_tokens(tokens, sloppy_validation=True)
         self.assertEqual(self.valid_expected_result, data)
         self.assertEqual('fr', language)
+
+    def testTwoArguments(self):
+        tokens = 'Zürich Basel'.split()
+        data, language = parser.parse_input(tokens)
+        self.assertEqual({'from': 'Zürich', 'to': 'Basel'}, data)
+        self.assertEqual('en', language)
 
     def testNotEnoughArgument(self):
         tokens = 'from basel via bern'.split()
