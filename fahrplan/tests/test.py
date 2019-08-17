@@ -104,6 +104,12 @@ class TestInputParsing(unittest.TestCase):
         self.assertEqual(self.valid_expected_result, data)
         self.assertEqual('fr', language)
 
+    def testTwoArguments(self):
+        tokens = 'Zürich Basel'.split()
+        data, language = parser.parse_input(tokens)
+        self.assertEqual({'from': 'Zürich', 'to': 'Basel'}, data)
+        self.assertEqual('en', language)
+
     def testNotEnoughArgument(self):
         tokens = 'from basel via bern'.split()
         self.assertRaises(ValueError, parser.parse_input, tokens)

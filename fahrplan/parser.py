@@ -99,6 +99,10 @@ def _process_tokens(tokens, sloppy_validation=False):
         elif not stack:
             continue
         stack.append(token)
+
+    if not stack:
+        return {}, None
+
     process_stack()
 
     # Validate data
@@ -243,7 +247,11 @@ def parse_input(tokens):
     # Process tokens, get data dict and language
     data, language = _process_tokens(tokens)
     if data == {}:
+        if len(tokens) == 2:
+            # Fallback when e.g. doing "fahrplan zurich basel"
+            return {'from': tokens[0], 'to': tokens[1]}, 'en'
         return data, language
+
     try:
         kws = keywords[language]
     except IndexError:
