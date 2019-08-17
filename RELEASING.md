@@ -25,7 +25,7 @@ Build source and binary distributions:
 Sign files:
 
     gpg --detach-sign -u ${GPG} -a dist/fahrplan-${VERSION}.tar.gz
-    gpg --detach-sign -u ${GPG} -a dist/fahrplan-${VERSION}-py2.py3-none-any.whl
+    gpg --detach-sign -u ${GPG} -a dist/fahrplan-${VERSION}-py3-none-any.whl
 
 Upload package to PyPI:
 

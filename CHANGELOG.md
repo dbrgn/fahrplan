@@ -15,6 +15,12 @@ Possible log types:
 
  - ...
 
+## [1.1.0] - 2019-08-17
+
+ - [added] Support being called with two arguments (#33)
+ - [removed] Drop Python 2 and 3.4 support (#30)
+ - [changed] Relax texttable dependency constraint (#29)
+
 ## [1.0.0] - 2017-09-10
 
  - [added] Support for HTTP proxies (#21)
@@ -46,7 +52,8 @@ Possible log types:
  - Initial Python 3 compatible release.
    No changelog information before this.
 
-[Unreleased]: https://github.com/dbrgn/fahrplan/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/dbrgn/fahrplan/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/dbrgn/fahrplan/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/dbrgn/fahrplan/compare/v0.2.3...v1.0.0
 [0.2.3]: https://github.com/dbrgn/fahrplan/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/dbrgn/fahrplan/compare/v0.2.1...v0.2.2
