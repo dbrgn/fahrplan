@@ -15,6 +15,10 @@ Possible log types:
 
  - ...
 
+## [1.1.1] - 2019-09-12
+
+ - [fixed] Consistent train / bus numbers (#34)
+
 ## [1.1.0] - 2019-08-17
 
  - [added] Support being called with two arguments (#33)
@@ -53,6 +57,7 @@ Possible log types:
    No changelog information before this.
 
 [Unreleased]: https://github.com/dbrgn/fahrplan/compare/v1.1.0...HEAD
+[1.1.1]: https://github.com/dbrgn/fahrplan/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/dbrgn/fahrplan/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/dbrgn/fahrplan/compare/v0.2.3...v1.0.0
 [0.2.3]: https://github.com/dbrgn/fahrplan/compare/v0.2.2...v0.2.3
