@@ -32,7 +32,7 @@ jobs:
 
   test-3.8:
     docker:
-      - image: circleci/python:3.8.0a4
+      - image: circleci/python:3.8.0b4
     steps: *test-steps
     environment:
       TOXENV: py38
