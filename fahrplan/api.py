@@ -60,7 +60,10 @@ def _parse_section(con_section, connection):
     section = {}
     section['station_from'] = departure['station']['name']
     section['station_to'] = arrival['station']['name']
-    section['travelwith'] = journey["name"] if journey is not None else ""
+    if journey is not None:
+        section['travelwith'] = '{} {}'.format(journey['category'], journey['number'])
+    else:
+        section['travelwith'] = ''
     section['departure'] = dateutil.parser.parse(departure['departure'])
     section['arrival'] = dateutil.parser.parse(arrival['arrival'])
     section['platform_from'] = "" if walk else departure['platform']
@@ -98,7 +101,12 @@ def _parse_connection(connection, include_sections=False):
     def keyfunc(s):
         return s['departure']['departure']
     data['change_count'] = str(connection['transfers'])
-    data['travelwith'] = ', '.join(connection['products'])
+    data['travelwith'] = ', '.join(
+        '{} {}'.format(section['journey']['category'], section['journey']['number'])
+        for section
+        in connection['sections']
+        if section['journey'] is not None
+    )
     data['occupancy1st'] = occupancies.get(connection['capacity1st'], '')
     data['occupancy2nd'] = occupancies.get(connection['capacity2nd'], '')
 
