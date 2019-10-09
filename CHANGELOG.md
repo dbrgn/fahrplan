@@ -15,6 +15,10 @@ Possible log types:
 
  - ...
 
+## [1.1.2] - 2019-10-09
+
+ - No changes, new release to fix a packaging problem
+
 ## [1.1.1] - 2019-09-12
 
  - [fixed] Consistent train / bus numbers (#34)
@@ -56,7 +60,8 @@ Possible log types:
  - Initial Python 3 compatible release.
    No changelog information before this.
 
-[Unreleased]: https://github.com/dbrgn/fahrplan/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/dbrgn/fahrplan/compare/v1.1.2...HEAD
+[1.1.2]: https://github.com/dbrgn/fahrplan/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/dbrgn/fahrplan/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/dbrgn/fahrplan/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/dbrgn/fahrplan/compare/v0.2.3...v1.0.0
