@@ -53,7 +53,6 @@ class TestBasicArgumentHandling(unittest.TestCase):
             r = run_command('{0} {1}'.format(BASE_COMMAND, arg))
             self.assertTrue(meta.description in r.std_out)
             self.assertTrue('usage:' in r.std_out)
-            self.assertTrue('optional arguments:' in r.std_out)
             self.assertTrue('positional arguments:' in r.std_out)
             self.assertTrue('Examples:' in r.std_out)
 

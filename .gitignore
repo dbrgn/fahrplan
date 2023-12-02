@@ -7,3 +7,7 @@
 .coverage
 .coveralls.yml
 .tox
+venv/
+VENV/
+virtual/
+VIRTUAL/

@@ -1,0 +1,22 @@
+name: CI
+on: [push]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        pyversion: ["3.9", "3.10", "3.11"]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "${{ matrix.version }}"
+      - name: Display Python version
+        run: python -c "import sys; print(sys.version)"
+      - name: Install tox
+        run: pip install tox
+      - name: Run tests on Python ${{ matrix.version }}
+        run: tox
+        env:
+          TOXENV: "py${{ matrix.version }}"
