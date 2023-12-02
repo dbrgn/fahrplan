@@ -6,7 +6,10 @@ from fahrplan import meta
 
 f = open('requirements.txt', 'r')
 lines = f.readlines()
-requirements = [l.strip().strip('\n') for l in lines if l.strip() and not l.strip().startswith('#')]
+requirements = [
+    line.strip().strip('\n') for line in lines
+    if line.strip() and not line.strip().startswith('#')
+]
 readme = open('README.rst').read()
 
 setup(name='fahrplan',
@@ -38,10 +41,6 @@ setup(name='fahrplan',
           'Operating System :: MacOS',
           'Operating System :: POSIX :: Linux',
           'Programming Language :: Python :: 3',
-          'Programming Language :: Python :: 3.5',
-          'Programming Language :: Python :: 3.6',
-          'Programming Language :: Python :: 3.7',
-          'Programming Language :: Python :: 3.8',
           'Topic :: Internet',
           'Topic :: Terminals',
       ],

@@ -11,7 +11,7 @@ readable argument parsing.
 
 Relies on the public transport API by opendata.ch: http://transport.opendata.ch/
 
-Fahrplan supports Python 3.5+.
+Fahrplan supports Python 3.9+.
 
 
 Installing
