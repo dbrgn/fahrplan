@@ -2,11 +2,11 @@ fahrplan
 ========
 
 
-.. image:: https://circleci.com/gh/dbrgn/fahrplan.svg?style=shield&circle-token=:circle-token
+.. image:: https://github.com/dbrgn/fahrplan/actions/workflows/CI/badge.svg
     :alt: Build status
-    :target: https://circleci.com/gh/dbrgn/fahrplan/
+    :target: https://github.com/dbrgn/fahrplan/actions
 
-Goal: Simple access to the SBB/CFF/FFS timetable service from the commandline with human
+Goal: Simple access to the SBB/CFF/FFS timetable service from the command line with human
 readable argument parsing.
 
 Relies on the public transport API by opendata.ch: http://transport.opendata.ch/
