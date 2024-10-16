@@ -27,6 +27,8 @@ from .api import get_connections
 from .display import Formats, connectionsTable
 from .helpers import perror
 
+import rich
+
 
 def main():
     output_format = Formats.SIMPLE
@@ -95,7 +97,7 @@ def main():
 
     # 3. Output data
     table = connectionsTable(connections, output_format)
-    print(table)
+    rich.print(table)
 
 if __name__ == '__main__':
     main()
