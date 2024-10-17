@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # A SBB/CFF/FFS commandline based timetable client.
-# Copyright (C) 2012-2023 Danilo Bargen
+# Copyright (C) 2012-2024 Danilo Bargen
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
