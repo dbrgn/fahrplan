@@ -1,11 +1,11 @@
 # Release process
 
-Signing key: https://keybase.io/dbrgn (F2F3A5FA)
+Signing key: https://bargen.dev/B993FF98A90C9AB1.txt
 
 Used variables:
 
     export VERSION={VERSION}
-    export GPG=F2F3A5FA
+    export GPG=B993FF98A90C9AB1
 
 Update version number in setup.py and CHANGELOG.md:
 
@@ -21,11 +21,6 @@ Build source and binary distributions:
 
     python3 setup.py sdist
     python3 setup.py bdist_wheel
-
-Sign files:
-
-    gpg --detach-sign -u ${GPG} -a dist/fahrplan-${VERSION}.tar.gz
-    gpg --detach-sign -u ${GPG} -a dist/fahrplan-${VERSION}-py3-none-any.whl
 
 Upload package to PyPI:
 

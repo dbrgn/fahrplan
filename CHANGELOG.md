@@ -17,7 +17,8 @@ Possible log types:
 
 ## [1.2.0] - 2024-10-16
 
- - [changed] Improve display by using rich instead of texttable
+ - [changed] Improve display by using rich instead of texttable (#37)
+ - [changed] Remove "Occupancy" column which hasn't been provided by the API since 2017 (#38)
 
 ## [1.1.2] - 2019-10-09
 
@@ -64,7 +65,8 @@ Possible log types:
  - Initial Python 3 compatible release.
    No changelog information before this.
 
-[Unreleased]: https://github.com/dbrgn/fahrplan/compare/v1.1.2...HEAD
+[Unreleased]: https://github.com/dbrgn/fahrplan/compare/v1.1.3...HEAD
+[1.1.3]: https://github.com/dbrgn/fahrplan/compare/v1.1.2...v1.1.3
 [1.1.2]: https://github.com/dbrgn/fahrplan/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/dbrgn/fahrplan/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/dbrgn/fahrplan/compare/v1.0.0...v1.1.0
