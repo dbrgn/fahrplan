@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from texttable import Texttable
+from rich.table import Table
 
 
 # Output formats
@@ -14,7 +14,7 @@ def _get_connection_row(i, connection):
     """
     sections = connection['sections']
     # Create row
-    row = [i]
+    row = [str(i)]
     for p in [
             lambda x: [x['station_from'], x['station_to']],  # Station
             lambda x: [x.get('platform_from') or '-', x.get('platform_to') or '-'],  # Platform
@@ -37,14 +37,20 @@ def connectionsTable(connections, output_format):
     """
     Get connections in the given output format.
     """
-    table = Texttable(max_width=0)
+    table = Table(show_lines=True)
     # Alignments
-    table.set_cols_valign(['m', 't', 't', 't', 't', 't', 'm', 't', 't'])
-    table.set_cols_align(['l', 'l', 'c', 'l', 'l', 'c', 'c', 'l', 'l'])
-    # Header
-    table.add_row(['#', 'Station', 'Platform', 'Date', 'Time', 'Duration', 'Chg.', 'With', 'Occupancy'])
+    # Define columns
+    table.add_column("#", justify="left", vertical="middle")
+    table.add_column("Station", justify="left", vertical="top")
+    table.add_column("Platform", justify="center", vertical="top")
+    table.add_column("Date", justify="left", vertical="top")
+    table.add_column("Time", justify="left", vertical="top")
+    table.add_column("Duration", justify="center", vertical="top")
+    table.add_column("Chg.", justify="center", vertical="middle")
+    table.add_column("With", justify="left", vertical="top")
+    table.add_column("Occupancy", justify="left", vertical="top")
     # Connection rows
     for i, connection in enumerate(connections):
-        table.add_row(_get_connection_row(i, connection))
+        table.add_row(*_get_connection_row(i, connection))
     # Display
-    return table.draw()
+    return table

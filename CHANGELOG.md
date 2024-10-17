@@ -15,6 +15,10 @@ Possible log types:
 
  - ...
 
+## [1.2.0] - 2024-10-16
+
+ - [changed] Improve display by using rich instead of texttable
+
 ## [1.1.2] - 2019-10-09
 
  - No changes, new release to fix a packaging problem
