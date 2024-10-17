@@ -202,7 +202,7 @@ class TestBasicQuery(unittest.TestCase):
     def testHeadline(self):
         """Test the headline items."""
         headline_items = ['Station', 'Platform', 'Date', 'Time',
-                          'Duration', 'Chg.', 'With', 'Occupancy']
+                          'Duration', 'Changes', 'With']
         for item in headline_items:
             self.assertIn(item, self.rows[1])
 

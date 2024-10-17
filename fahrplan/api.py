@@ -6,14 +6,6 @@ import dateutil.parser
 import sys
 from .helpers import perror
 
-occupancies = {
-    None: '',
-    -1: '',
-    0: 'Low',  # todo check
-    1: 'Low',
-    2: 'Medium',
-    3: 'High',
-}
 API_URL = 'http://transport.opendata.ch/v1'
 
 
@@ -68,15 +60,6 @@ def _parse_section(con_section, connection):
     section['arrival'] = dateutil.parser.parse(arrival['arrival'])
     section['platform_from'] = "" if walk else departure['platform']
     section['platform_to'] = arrival['platform']
-    if walk:
-        section['occupancy1st'] = ''
-        section['occupancy2nd'] = ''
-    elif journey:
-        section['occupancy1st'] = occupancies.get(con_section['journey']['capacity1st'], '')
-        section['occupancy2nd'] = occupancies.get(con_section['journey']['capacity2nd'], '')
-    else:
-        section['occupancy1st'] = occupancies.get(connection['capacity1st'], '')
-        section['occupancy2nd'] = occupancies.get(connection['capacity2nd'], '')
     return section
 
 
@@ -107,8 +90,6 @@ def _parse_connection(connection, include_sections=False):
         in connection['sections']
         if section['journey'] is not None
     )
-    data['occupancy1st'] = occupancies.get(connection['capacity1st'], '')
-    data['occupancy2nd'] = occupancies.get(connection['capacity2nd'], '')
 
     # Sections
     con_sections = sorted(connection['sections'], key=keyfunc)
@@ -127,7 +108,7 @@ def _parse_connection(connection, include_sections=False):
         for p in ["station_to", "arrival"]:
             section[p] = to[p]
         # Get information from connection
-        for p in ["occupancy2nd", "occupancy1st", "travelwith", "change_count"]:
+        for p in ["travelwith", "change_count"]:
             section[p] = data[p]
         data['sections'] = [section]
 

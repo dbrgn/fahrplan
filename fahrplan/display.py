@@ -23,7 +23,6 @@ def _get_connection_row(i, connection):
             lambda x: [str((x['arrival'] - x['departure'])).rsplit(':', 1)[0], ' '],  # Duration
             None,
             lambda x: [x['travelwith'], ' '],  # With
-            lambda x: ['1: ' + x['occupancy1st'], '2: ' + x['occupancy2nd']]  # Occupancy
     ]:
         if p is None:
             row.append(connection['change_count'])
@@ -46,9 +45,8 @@ def connectionsTable(connections, output_format):
     table.add_column("Date", justify="left", vertical="top")
     table.add_column("Time", justify="left", vertical="top")
     table.add_column("Duration", justify="center", vertical="top")
-    table.add_column("Chg.", justify="center", vertical="middle")
+    table.add_column("Changes", justify="center", vertical="middle")
     table.add_column("With", justify="left", vertical="top")
-    table.add_column("Occupancy", justify="left", vertical="top")
     # Connection rows
     for i, connection in enumerate(connections):
         table.add_row(*_get_connection_row(i, connection))
