@@ -34,6 +34,16 @@ keywords = {
         'at': [],  # TODO: "à" clashes with top level keywords
         'weekdays': ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"],
     },
+    'it': {
+        'now': ['adesso'],
+        'noon': ['mezzogiorno'],
+        'midnight': ['mezzanotte'],
+        'today': ["oggi"],
+        'tomorrow': ["domani"],
+        'days': [r"fra (\d+) giorni"],
+        'at': [alle],  # TODO: "à" clashes with top level keywords
+        'weekdays': ["lunedì", "martedì", "mercoledì", "giovedì", "venerdì", "sabato", "domenica"],
+    },
 }
 
 
@@ -70,6 +80,8 @@ def _process_tokens(tokens, sloppy_validation=False):
                'departure': 'ab', 'arrival': 'an'},
         'fr': {'from': 'de', 'to': 'à', 'via': 'via',
                'departure': 'départ', 'arrival': 'arrivée'},
+        'it': {'from': 'da', 'to': 'a', 'via': 'via',
+               'departure': 'partenza', 'arrival': 'arrivo'},
     }
 
     # Detect language
