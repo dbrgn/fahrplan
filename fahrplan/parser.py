@@ -41,8 +41,8 @@ keywords = {
         'today': ["oggi"],
         'tomorrow': ["domani"],
         'days': [r"fra (\d+) giorni"],
-        'at': ["alle"],  # TODO: "à" clashes with top level keywords
-        'weekdays': ["lunedi", "martedi", "mercoledi", "giovedi", "venerdi", "sabato", "domenica"],
+        'at': ["alle"],  
+        'weekdays': ["lunedi", "martedi", "mercoledi", "giovedi", "venerdi", "sabato", "domenica"],# TODO: "ì" (like venerdì) clashes with top level keywords
     },
 }
 
