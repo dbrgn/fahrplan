@@ -41,6 +41,7 @@ def main():
                 + ' en -- from, to, via, departure, arrival\n'
                 + ' de -- von, nach, via, ab, an\n'
                 + ' fr -- de, à, via, départ, arrivée\n'
+                + ' it -- da, a, via, partenza, arrivo\n'
                 + '\n'
                 + ' You can also use natural time and date specifications in your language, like:\n'
                 + ' - "now", "immediately", "at noon", "at midnight",\n'
