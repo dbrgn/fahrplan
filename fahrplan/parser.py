@@ -25,7 +25,7 @@ keywords = {
         'weekdays': ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"],
     },
     'fr': {
-        'now': ['maitenant'],
+        'now': ['maintenant'],
         'noon': ['midi'],
         'midnight': ['minuit'],
         'today': ["aujourd'hui"],
